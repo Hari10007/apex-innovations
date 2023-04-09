@@ -1,0 +1,4 @@
+#!/bin/bash
+source backend/env/Scripts/activate
+pip list
+honcho
