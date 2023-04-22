@@ -20,7 +20,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/',include('employee.urls')),
     path('api/', include('attendance.urls')),
-    path('api/', include('holiday.urls')),
+    path('api/holiday/', include('holiday.urls')),
     path('api/', include('payment.urls')),
     path('api/leave/', include('leave.urls')),
+    path('api/project/', include('project.urls')),
+    path('api/notification/', include('notification.urls')),
 ]

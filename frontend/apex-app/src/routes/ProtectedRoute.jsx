@@ -5,12 +5,10 @@ import { Navigate, Outlet } from 'react-router-dom'
 
 
 const ProtectedRoute = ({ ...props }) => {
-    console.log(props)
+
     const employee = useSelector(selectUser);
 
-    if (props.status === "manager" && employee && employee.manager) {
-        return <Outlet />;
-    } else if (props.status === "employee" && employee) {
+    if (employee) {
         return <Outlet />;
     } else {
         return <Navigate to={props.logoutPath} />;

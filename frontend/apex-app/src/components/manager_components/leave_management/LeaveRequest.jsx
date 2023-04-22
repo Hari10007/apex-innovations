@@ -59,7 +59,7 @@ function LeaveRequest() {
   useEffect(() => {
     fetchEmployeeLeave(params.id);
   }, [employeeLeave?.status])
-  console.log(employeeLeave)
+ 
 
   return (
     <>

@@ -16,6 +16,7 @@ function LeavePage() {
   const handleLeaveUpdate = () => {
     setLeaveUpdated(!leaveUpdated);
   };
+  
   return (
     <>
       <Loader />

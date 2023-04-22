@@ -1,21 +1,20 @@
 import React , {useState} from 'react'
 import '../css/Login.css'
-import { useNavigate } from "react-router-dom"
 import jwt from 'jwt-decode'
 import {useDispatch} from 'react-redux'
+import Cookies from 'js-cookie';
 import { login } from '../../redux-toolkit/userSlice'
 
 function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const navigate = useNavigate ();
   const dispatch = useDispatch('')
 
   const submit = async (e) => {
       e.preventDefault();
 
-      const response =  await fetch('http://localhost:8000/api/login', 
+      const response =  await fetch('http://localhost:8000/api/admin_login', 
       {
           method: 'POST',
           credentials: 'include',
@@ -27,17 +26,21 @@ function AdminLogin() {
       });
 
       const content = await response.json();
-      
+
       if (response.status === 200){
-        const decode_token = jwt(content.jwt)
-        localStorage.setItem('authTokens', content.jwt);
+        const decode_token = jwt(content.access)
+
+        const ACCESS_TOKEN_LIFETIME = 1; // hour
+        const accessTokenExpires = new Date(Date.now() + ACCESS_TOKEN_LIFETIME * 60 * 60 * 1000);
+
+        Cookies.set('access_token', content.access, { expires: accessTokenExpires});
+        Cookies.set('refresh_token', content.refresh, { expires: 90});
+
         dispatch(login(decode_token));
-        navigate.push("/")
       }
       else{
         setMessage(content.detail)
       }
-
   }
 
   return (

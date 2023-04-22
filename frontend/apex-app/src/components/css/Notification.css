@@ -1,0 +1,66 @@
+.notification {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+  }
+  
+  /* .fa-regular.fa-bell:hover {
+    color: black;
+    background-color: #ddd;
+    border-radius: '50%';
+    width: '100px';
+    height: '100px';
+  }
+  
+  .notification i {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+    color:#ddd;
+  }
+  
+  .notification .badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: red;
+    color: white;
+    font-size: 0.40rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 50%;
+  }
+  
+  .notification-list {
+    position: absolute;
+    top: 3rem;
+    right: 0;
+    z-index: 999;
+    width: 400px;
+    padding: 1rem;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  .notification-list ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .notification-list li {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: #f7f7f7;
+    border-radius: 4px;
+  } */
+  .notification ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .spinner-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }

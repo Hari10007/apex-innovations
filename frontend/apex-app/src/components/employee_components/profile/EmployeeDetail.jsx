@@ -4,14 +4,17 @@ import Image from 'react-bootstrap/Image';
 import BankAccount from './BankAccount';
 import { Badge, Button} from 'react-bootstrap';
 import UpdatePassword from './UpdatePassword';
+import { useDispatch } from 'react-redux';
+import { updateUserDetails } from '../../../redux-toolkit/userSlice';
 
 
 function EmployeeDetail({ profileUpdated }) {
   
   const [modalShow, setModalShow] = useState(false);
   const [employee, setEmployee] = useState([]);
-  const imageURL = "http://localhost:8000/api" + employee.image || "https://bootdey.com/img/Content/avatar/avatar7.png";
+  const imageURL = employee.image ? "http://localhost:8000/api" + employee.image : "https://bootdey.com/img/Content/avatar/avatar7.png";
   const api = useAxios();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     async function fetchData() {
@@ -20,6 +23,7 @@ function EmployeeDetail({ profileUpdated }) {
 
       if (response.status === 200) {
         setEmployee(response.data);
+        dispatch(updateUserDetails(response.data.image));
       }
     }
     fetchData();
@@ -49,10 +53,15 @@ function EmployeeDetail({ profileUpdated }) {
                 <div className='col-md-6 d-flex flex-column align-items-start'>
                   <h6>{employee.email}</h6>
                 </div>
-                <hr />
-                <div className='col-md-6 d-flex flex-column align-items-start'>
-                  <h6><i className="fa fa-map-marker" style={{fontSize:'2'}}></i>  {employee.city},{employee.state}</h6>
-                </div>
+
+                {(employee.city || employee.state ) ?
+                  <>
+                    <hr />
+                    <div className='col-md-6 d-flex flex-column align-items-start'>
+                      <h6><i className="fa fa-map-marker" style={{fontSize:'2'}}></i>  {employee.city},{employee.state}</h6>
+                    </div>
+                  </>
+                : null}
               </div>
                     
             </div>

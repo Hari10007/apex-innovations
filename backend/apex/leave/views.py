@@ -25,7 +25,7 @@ class LeaveCount(APIView):
                 causal_leaves_left = leave.days_per_year - (EmployeeLeave.objects.filter(employee=employee, leave__name=leave.name, start_date__year=current_year, status='A').aggregate(Sum('taken_days'))['taken_days__sum'] or 0)
             elif leave.name == 'Sick':
                 sick_leaves_left = leave.days_per_year - (EmployeeLeave.objects.filter(employee=employee, leave__name=leave.name, start_date__year=current_year, status='A').aggregate(Sum('taken_days'))['taken_days__sum'] or 0)
-            elif leave.name == 'Paid':
+            elif leave.name == 'L.O.P':
                 paid_leaves_left = leave.days_per_year - (EmployeeLeave.objects.filter(employee=employee, leave__name=leave.name, start_date__year=current_year, status='A').aggregate(Sum('taken_days'))['taken_days__sum'] or 0)
 
         leaves_left = {
@@ -114,7 +114,7 @@ class LeaveRequestsList(APIView):
         paginator = Paginator(employee_leaves, items_per_page)
         page = paginator.get_page(page_number)
 
-        serializer = EmployeeLeaveSerializer(page, many=True)
+        serializer = EmployeeLeaveSerializer(employee_leaves, many=True)
 
         return Response(serializer.data)
 

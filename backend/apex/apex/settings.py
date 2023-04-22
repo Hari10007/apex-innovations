@@ -51,7 +51,9 @@ INSTALLED_APPS = [
     'attendance',
     'holiday',
     'payment',
-    'leave'
+    'leave',
+    'project',
+    'notification'
 ]
 
 MIDDLEWARE = [
@@ -137,7 +139,7 @@ WSGI_APPLICATION = 'apex.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'apex_innovations',
+        'NAME': 'apex_innovation',
         'USER': 'root',
         'PASSWORD': 'Harix123#',
         'HOST': 'localhost',

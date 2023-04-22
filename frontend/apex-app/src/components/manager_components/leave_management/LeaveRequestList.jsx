@@ -1,15 +1,16 @@
 import React from 'react'
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { Pagination, Table } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 import useAxios from '../../../utilis/useAxios';
 import Button from 'react-bootstrap/Button';
 import { useNavigate } from 'react-router-dom';
+import PaginationTag from '../../pagination/PaginationTag';
 
 
 function LeaveRequestList() {
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [itemsPerPage, setItemsPerPage] = useState(7);
     const [leavesRequests, setLeaveRequests] = useState([]);
     const navigate = useNavigate();
 
@@ -32,7 +33,7 @@ function LeaveRequestList() {
     }
 
     const handleViewClick = (leave_request) => {
-        navigate(`/manager/leave_management/leave_requests/${leave_request.id}`);
+        navigate(`/leave_management/leave_requests/${leave_request.id}`);
     };
 
     const handlePageChange = (pageNumber) => {
@@ -51,8 +52,8 @@ function LeaveRequestList() {
     }, [])
     return (
         <>
-                <Table>
-                    <thead style={{ backgroundColor: '#2b889b', color: '#ffffff' }}>
+            <Table>
+                <thead style={{ backgroundColor: '#2b889b', color: '#ffffff' }}>
                     <tr>
                         <th>#</th>
                         <th>Employee</th>
@@ -63,42 +64,30 @@ function LeaveRequestList() {
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
-                    </thead>
-                    <tbody>
-                    {currentItems.map((leave_request, index) => (
-                        <tr key={index}>
-                        <td>{startIndex + index + 1}</td>
-                        <td>{leave_request.employee_name}</td>
-                        <td>{leave_request.leave_name}</td>
-                        <td>{leave_request.start_date}</td>
-                        <td>{leave_request.end_date}</td>
-                        <td>{leave_request.taken_days}</td>
-                        {leave_request.status === "A" &&
-                            <td> <span className="badge rounded-pill bg-success">{leave_request.status}</span> </td>}
-                        {leave_request.status === "P" &&
-                            <td> <span className="badge rounded-pill bg-warning">{leave_request.status}</span> </td>}
-                        {leave_request.status === "R" &&
-                            <td> <span className="badge rounded-pill bg-danger">{leave_request.status}</span> </td>}
-                        <td><Button onClick={() => handleViewClick(leave_request)}>View</Button></td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </Table>
-                
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <Pagination >
-                        <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
-                        <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
-                        {pageNumbers.map((pageNumber) => (
-                            <Pagination.Item key={pageNumber} active={pageNumber === currentPage} onClick={() => handlePageChange(pageNumber)}>
-                            {pageNumber}
-                            </Pagination.Item>
-                        ))}
-                        <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === pageNumbers.length} />
-                        <Pagination.Last onClick={() => handlePageChange(pageNumbers.length)} disabled={currentPage === pageNumbers.length} />
-                    </Pagination>
-                </div>
-            </>
+                </thead>
+                <tbody>
+                {currentItems.map((leave_request, index) => (
+                    <tr key={index}>
+                    <td>{startIndex + index + 1}</td>
+                    <td>{leave_request.employee_name}</td>
+                    <td>{leave_request.leave_name}</td>
+                    <td>{leave_request.start_date}</td>
+                    <td>{leave_request.end_date}</td>
+                    <td>{leave_request.taken_days}</td>
+                    {leave_request.status === "A" &&
+                        <td> <span className="badge rounded-pill bg-success">{leave_request.status}</span> </td>}
+                    {leave_request.status === "P" &&
+                        <td> <span className="badge rounded-pill bg-warning">{leave_request.status}</span> </td>}
+                    {leave_request.status === "R" &&
+                        <td> <span className="badge rounded-pill bg-danger">{leave_request.status}</span> </td>}
+                    <td><Button onClick={() => handleViewClick(leave_request)}>View</Button></td>
+                    </tr>
+                ))}
+                </tbody>
+            </Table>
+
+            <PaginationTag currentPage={currentPage} pageNumbers={pageNumbers} handlePageChange={handlePageChange}/>
+        </>
     )
 }
 

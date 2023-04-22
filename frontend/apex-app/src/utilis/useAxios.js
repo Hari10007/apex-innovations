@@ -2,9 +2,9 @@ import axios from 'axios'
 import jwt_decode from "jwt-decode";
 // import dayjs from 'dayjs'
 import { useDispatch } from 'react-redux';
-import { logout, startLoading, stopLoading, updateUser } from '../redux-toolkit/userSlice';
+import { logout, updateUser } from '../redux-toolkit/userSlice';
 import Cookies from 'js-cookie';
-
+import { startNotificationLoader, startPageLoader, stopNotificationLoader, stopPageLoader } from '../redux-toolkit/loaderSlice';
 
 const baseURL = 'http://localhost:8000/'
 
@@ -26,9 +26,13 @@ const useAxios = () => {
 
 
     axiosInstance.interceptors.request.use(async req => {
-
-        dispatch(startLoading());
+        if (req.url !== "api/notification/reset_notification"){
+            dispatch(startPageLoader());
+        }else{
+            dispatch(startNotificationLoader());
+        }
         requestCount++;
+        
 
         if (access_token === null) {
             const response = await axios.post(`${baseURL}/api/refresh-token/`, {
@@ -55,14 +59,16 @@ const useAxios = () => {
         (response) => {
             responseCount++;
             if (requestCount === responseCount) {
-                dispatch(stopLoading()); 
+                dispatch(stopPageLoader());
+                dispatch(stopNotificationLoader());
             }
             return response;
         },
         (error) => {
           responseCount++;
           if (requestCount === responseCount) {
-            dispatch(stopLoading());
+            dispatch(stopPageLoader());
+            // dispatch(stopNotificationLoader());
           }
           return Promise.reject(error);
         }

@@ -35,6 +35,12 @@ class EmployeeDetailSerializer(ModelSerializer):
         model = Employee
         fields = '__all__'
 
+class EmployeeEmailSerializer(ModelSerializer):
+
+    class Meta:
+        model = Employee
+        fields = ['email']
+
 
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)

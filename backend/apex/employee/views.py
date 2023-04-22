@@ -42,7 +42,7 @@ class LoginView(APIView):
         email = request.data['email']
         password = request.data['password']
 
-        employee = Employee.objects.filter(email=email, is_staff = False).first()
+        employee = Employee.objects.filter(email=email).first()
 
         if employee is None:
             raise AuthenticationFailed('Employee not found!')
@@ -55,64 +55,10 @@ class LoginView(APIView):
 
         token['id'] = employee.id
         token['email'] = employee.email
-        token['image'] = employee.image and "http://localhost:8000/api"+ employee.image.url  or ""
-
-        response_data = {
-            'refresh': str(token),
-            'access': str(token.access_token),
-        }
-
-        return Response(response_data)
-
-class AdminLoginView(APIView):
-    def post(self, request):
-        email = request.data['email']
-        password = request.data['password']
-
-        employee = Employee.objects.filter(email=email , is_staff = True).first()
-
-        if employee is None:
-            raise AuthenticationFailed('Admin not found!')
-
-        if not employee.check_password(password):
-            raise AuthenticationFailed('Incorrect password!')
-
-        token = RefreshToken.for_user(employee)
-
-        token['id'] = employee.id
-        token['email'] = employee.email
+        token['image'] = employee.image and employee.image.url  or ""
+        token['manager'] = employee.is_manager
         token['admin'] = employee.is_staff
-        token['manager'] = employee.is_manager
-        token['image'] = employee.image and "http://localhost:8000/api"+ employee.image.url  or ""
 
-        response_data = {
-            'refresh': str(token),
-            'access': str(token.access_token),
-        }
-
-        return Response(response_data)
-
-class ManagerLoginView(APIView):
-    def post(self, request):
-        email = request.data['email']
-        password = request.data['password']
-
-        employee = Employee.objects.filter(email=email , is_manager = True).first()
-
-        if employee is None:
-            raise AuthenticationFailed('Manager not found!')
-
-        if not employee.check_password(password):
-            raise AuthenticationFailed('Incorrect password!')
-
-        token = RefreshToken.for_user(employee)
-
-        token['id'] = employee.id
-        token['email'] = employee.email
-        token['manager'] = employee.is_manager
-        token['image'] = employee.image and "http://localhost:8000/api"+ employee.image.url  or ""
-
-        print(token)
         response_data = {
             'refresh': str(token),
             'access': str(token.access_token),
@@ -126,7 +72,6 @@ class LogoutView(APIView):
         try:
             refresh_token = request.data["refresh"]
             token = RefreshToken(refresh_token)
-            print(token)
             token.blacklist()
             return Response("Successfully Logout", status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
@@ -145,7 +90,6 @@ class ChangePasswordView(APIView):
     permission_classes = (IsAuthenticated,)
     def post(self, request):
         serializer = ChangePasswordSerializer(data=request.data)
-        print(request.data)
         if serializer.is_valid():
             employee = authenticate(email=request.user.email, password=serializer.validated_data['old_password'])
             if employee is not None:

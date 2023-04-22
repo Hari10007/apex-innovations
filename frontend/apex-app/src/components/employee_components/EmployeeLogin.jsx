@@ -58,7 +58,7 @@ function EmployeeLogin() {
             <label>Password</label>
           </div>
 
-          <button className="w-100 btn btn-lg btn-secondary" type="submit">Log in</button>
+          <button className="w-100 btn btn-lg btn-primary" type="submit">Log in</button>
         </form>
         
       </main>

@@ -1,10 +1,10 @@
 import React from 'react'
 import Spinner from 'react-bootstrap/Spinner';
 import { useSelector } from 'react-redux';
-import { selectLoading } from '../../redux-toolkit/userSlice';
+import { selectPageLoader} from '../../redux-toolkit/loaderSlice';
 
 function Loader() {
-  const isLoading = useSelector(selectLoading)
+  const isLoading = useSelector(selectPageLoader)
   
   return (
     <>  

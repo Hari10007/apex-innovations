@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .serializers import HolidaySerializer
 from .models import Holiday
-from django.db.models.functions import ExtractYear
+from django.db.utils import IntegrityError
+from django.db.models.functions import ExtractYear, ExtractMonth
 # Create your views here.
 
 
@@ -17,8 +18,58 @@ class ListHolidays(APIView):
         if not current_year:
             current_year = timezone.now().year
         
-        holidays = Holiday.objects.annotate(year=ExtractYear('date')).filter(year=current_year)
+        holidays = Holiday.objects.annotate(year=ExtractYear('date'), month=ExtractMonth('date')).filter(year=current_year).order_by('month')
 
         serializer = HolidaySerializer(holidays, many=True)
         
         return Response(serializer.data)
+
+class CreateHoliday(APIView):
+    permission_classes = (IsAuthenticated, )
+    def post(self, request):
+        admin = request.user
+
+        name = request.data.get('name')
+        date = request.data.get('date')
+
+        try:
+            holiday = Holiday.objects.create(name=name, date=date)
+        except IntegrityError:
+            return Response({'message': 'Holiday with the same name and date already exists', 'status': 'danger'})
+
+        return Response({'message': 'New Holiday Added', 'status': 'success'})
+
+class UpdateHoliday(APIView):
+    permission_classes = (IsAuthenticated, )
+    def post(self, request, id):
+        admin = request.user
+
+        id = int(id)
+        holiday = Holiday.objects.get(id = id)
+        name = request.data.get('name')
+        date = request.data.get('date')
+
+        try:
+            holiday.name = name
+            holiday.date = date
+            holiday.save()
+        except IntegrityError:
+            return Response({'message': 'Holiday with the same name and date already exists', 'status': 'danger'})
+
+        return Response({'message': 'Holiday Update Successfully', "status":'success'})
+
+
+class DeleteHoliday(APIView):
+    permission_classes = (IsAuthenticated, )
+    def delete(self, request, id):
+        admin = request.user
+
+        id = int(id)
+        holiday = Holiday.objects.get(id = id)
+
+        try:
+            holiday = Holiday.objects.get(id=id)
+            holiday.delete()
+            return Response({'message': 'Holiday deleted Successfully', 'status': 'success'})
+        except Holiday.DoesNotExist:
+            return Response({'message': 'Holiday not found', 'status': 'error'}, status=status.HTTP_404_NOT_FOUND)

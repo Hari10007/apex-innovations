@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
 import useAxios from '../../../utilis/useAxios';
-import Pagination from 'react-bootstrap/Pagination';
+import PaginationTag from '../../pagination/PaginationTag';
 
 function AttendanceTable({ attendanceUpdated ,selectedDate }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,19 +60,8 @@ function AttendanceTable({ attendanceUpdated ,selectedDate }) {
           ))}
         </tbody>
       </Table>
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <Pagination >
-          <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
-          <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
-          {pageNumbers.map((pageNumber) => (
-            <Pagination.Item key={pageNumber} active={pageNumber === currentPage} onClick={() => handlePageChange(pageNumber)}>
-              {pageNumber}
-            </Pagination.Item>
-          ))}
-          <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === pageNumbers.length} />
-          <Pagination.Last onClick={() => handlePageChange(pageNumbers.length)} disabled={currentPage === pageNumbers.length} />
-        </Pagination>
-      </div>
+      
+      <PaginationTag currentPage={currentPage} pageNumbers={pageNumbers} handlePageChange={handlePageChange}/>
     </div>
   );
 }
