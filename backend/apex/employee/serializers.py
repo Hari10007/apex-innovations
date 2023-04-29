@@ -30,10 +30,15 @@ class EmployeeSerializer(ModelSerializer):
 class EmployeeDetailSerializer(ModelSerializer):
     image = serializers.ImageField(max_length=None, use_url=True)
     designation_name = serializers.CharField(source='designation.name', read_only=True)
+    name = serializers.SerializerMethodField()
 
     class Meta:
         model = Employee
         fields = '__all__'
+    
+    def get_name(self, obj):
+        return f"{obj.first_name} {obj.last_name}"
+
 
 class EmployeeEmailSerializer(ModelSerializer):
 

@@ -26,7 +26,6 @@ function MarkAttendance({handleAttendanceUpdate, selectedDate}) {
   const fetchLastCheck = async () => {
     try {
       let now = new Date();
-      // const currentDate =  new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, 10);
       const currentDate = moment(now).format('YYYY-MM-DD');
 
       const response = await api.get(`api/attendance/status?&date=${currentDate}`);

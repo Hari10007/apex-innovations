@@ -90,12 +90,22 @@ function Sidebar() {
                     </NavItem>
                 }
 
-                <NavItem eventKey="attendance">
-                    <NavIcon>
-                        <FontAwesomeIcon icon={faClipboardUser}  style={{  fontSize: '1.2rem' }} />
-                    </NavIcon>
-                    <NavText>Attendance</NavText>            
-                </NavItem>
+                {employee?.admin ? (
+                    <NavItem eventKey="attendances">
+                        <NavIcon>
+                            <FontAwesomeIcon icon={faClipboardUser}  style={{  fontSize: '1.2rem' }} />
+                        </NavIcon>
+                        <NavText>Attendance Log</NavText>            
+                    </NavItem>
+                    ) : (
+                    <NavItem eventKey="attendance">
+                        <NavIcon>
+                            <FontAwesomeIcon icon={faClipboardUser}  style={{  fontSize: '1.2rem' }} />
+                        </NavIcon>
+                        <NavText>Attendance</NavText>            
+                    </NavItem>
+                )
+                }
 
                 {employee?.manager && 
                     <NavItem eventKey="leave_management">
@@ -113,19 +123,26 @@ function Sidebar() {
                     <NavText>Profile</NavText>            
                 </NavItem>
 
-                <NavItem eventKey="project">
-                    <NavIcon>
-                        <FontAwesomeIcon icon={faDiagramProject} style={{  fontSize: '1.2rem' }} />
-                    </NavIcon>
-                    <NavText>Project</NavText>            
-                </NavItem>
+                
+                {!employee?.admin &&
+                    <NavItem eventKey="project">
+                        <NavIcon>
+                            <FontAwesomeIcon icon={faDiagramProject} style={{  fontSize: '1.2rem' }} />
+                        </NavIcon>
+                        <NavText>Project</NavText>            
+                    </NavItem>
+                }
+                
+                {!employee?.admin && 
+                    <NavItem eventKey="leave">
+                        <NavIcon>
+                            <FontAwesomeIcon icon={faPersonWalkingArrowRight} style={{  fontSize: '1.2rem' }}  />
+                        </NavIcon>
+                        <NavText>Leave</NavText>            
+                    </NavItem>
+                }
 
-                <NavItem eventKey="leave">
-                    <NavIcon>
-                        <FontAwesomeIcon icon={faPersonWalkingArrowRight} style={{  fontSize: '1.2rem' }}  />
-                    </NavIcon>
-                    <NavText>Leave</NavText>            
-                </NavItem>
+                
 
                 <NavItem eventKey="holiday">
                     <NavIcon>

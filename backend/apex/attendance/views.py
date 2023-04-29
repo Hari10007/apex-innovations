@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .serializers import AttendanceSerializer
 from django.utils import timezone
+from employee.models import Employee
 from .models import Attendance, CheckInOut
 from rest_framework import status
 from django.core.paginator import Paginator
@@ -30,20 +31,38 @@ class AttendanceLog(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
         employee = request.user
-        current_date = request.GET.get('date')
 
-        attendance = Attendance.objects.filter(employee=employee, date=current_date).first()
-        if attendance:
-            check_in_out_list = []
-            for check_in_out in attendance.check_in_outs.all():
-                check_in_out_dict = {
-                    'is_check_in': check_in_out.is_check_in,
-                    'time': check_in_out.time,
+        if employee.is_admin:
+            attendance_id = int(request.GET.get('attendance'))
+            attendance = Attendance.objects.get(id=attendance_id)
+  
+            if attendance:
+                check_in_out_list = []
+                for check_in_out in attendance.check_in_outs.all():
+                    check_in_out_dict = {
+                        'is_check_in': check_in_out.is_check_in,
+                        'time': check_in_out.time,
+                    }
+                    check_in_out_list.append(check_in_out_dict)
+                result = {
+                    "log": check_in_out_list,
+                    "total_hours": attendance.working_time
                 }
-                check_in_out_list.append(check_in_out_dict)
-            return Response({'log': check_in_out_list})
+                return Response(result)
         else:
-            return Response({'message':"Log not found"})       
+            current_date = request.GET.get('date')
+            attendance = Attendance.objects.filter(employee=employee, date=current_date).first()
+            if attendance:
+                check_in_out_list = []
+                for check_in_out in attendance.check_in_outs.all():
+                    check_in_out_dict = {
+                        'is_check_in': check_in_out.is_check_in,
+                        'time': check_in_out.time,
+                    }
+                    check_in_out_list.append(check_in_out_dict)
+                return Response({'log': check_in_out_list})
+            else:
+                return Response({'message':"Log not found"})       
 
 
 class ListAttendance(APIView):
@@ -51,19 +70,28 @@ class ListAttendance(APIView):
     def get(self, request):
         employee = request.user
         date =  request.GET.get('date')
-        
-        page_number = request.GET.get('page')
-        items_per_page = request.GET.get('perPage')
-        if date == "false":
-            attendances = employee.attendances.all().order_by('-date')
-        else:
-            attendances = employee.attendances.all().filter(date=date)
-        paginator = Paginator(attendances, items_per_page)
-        page = paginator.get_page(page_number)
 
-        serializer = AttendanceSerializer(attendances, many=True)
+        page_number = request.GET.get('page', 1)
+        items_per_page = request.GET.get('perPage', 7)
+
+        if employee.is_admin:
+            attendances = Attendance.objects.all().order_by('-date')
+        else:
+            if date == "false":
+                attendances = employee.attendances.all().order_by('-date')
+            else:
+                attendances = employee.attendances.all().filter(date=date)
+
+        paginator = Paginator(attendances, items_per_page)
+        page = paginator.page(page_number)
+    
+        serializer = AttendanceSerializer(page, many=True)
+        result ={
+            "attendances" : serializer.data,
+            "page_count" : paginator.num_pages,
+        }
         
-        return Response(serializer.data)
+        return Response(result, status=status.HTTP_200_OK)
         
 
 class CheckIn(APIView):

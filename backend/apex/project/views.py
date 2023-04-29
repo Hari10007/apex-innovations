@@ -6,9 +6,9 @@ from .models import Project, EmployeeProject
 from employee.models import Employee
 from notification.models import Notification
 from django.core.paginator import Paginator
+from django.db.models import Q
 from employee.serializers import EmployeeEmailSerializer
 from .serializers import ProjectSerializer
-from django.db.models import Q
 import json 
 
 # Create your views here.
@@ -95,45 +95,72 @@ class ListProjects(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
         employee = request.user
-        keyword = request.GET.get('keyword')
 
-        page_number = request.GET.get('page')
-        items_per_page = request.GET.get('perPage')
+        keyword = request.GET.get('keyword', '')
+        page_number = request.GET.get('page', 1)
+        items_per_page = request.GET.get('perPage', 6)
 
         if employee.is_admin:
             if keyword and keyword.strip() != '':
-                projects = Project.objects.filter(Q(title__icontains=keyword) | Q(description__icontains=keyword)).order_by('-date_modified')
+                projects = Project.objects.filter(Q(title__icontains=keyword) | Q(description__icontains=keyword)).order_by('-date_modified')[:6]
             else:
                 projects = Project.objects.all().order_by('-date_modified')
         else:
             if keyword and keyword.strip() != '':
-                projects = employee.projects.filter(Q(title__icontains=keyword) | Q(description__icontains=keyword)).order_by('-date_modified')
+                projects = employee.projects.filter(Q(title__icontains=keyword) | Q(description__icontains=keyword)).order_by('-date_modified')[:6]
             else:
                 projects = employee.projects.all().order_by('-date_modified')
 
-        paginator = Paginator(projects, items_per_page)
-        page = paginator.get_page(page_number)
-        serializer = ProjectSerializer(projects, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        if not keyword:
+
+            paginator = Paginator(projects, items_per_page)
+            page = paginator.page(page_number)
+        
+            serializer = ProjectSerializer(page, many=True)
+            result ={
+                "project" : serializer.data,
+                "page_count" : paginator.num_pages,
+            }
+        else:
+            serializer = ProjectSerializer(projects, many=True)
+            result ={
+                "project" : serializer.data,
+                "page_count" : 1,
+            }
+        
+        return Response(result, status=status.HTTP_200_OK)
 
 class EmployeeProjects(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
         employee= request.user
-        keyword = request.GET.get('keyword')
-
-        page_number = request.GET.get('page')
-        items_per_page = request.GET.get('perPage')
+        
+        keyword = request.GET.get('keyword', '')
+        page_number = request.GET.get('page', 1)
+        items_per_page = request.GET.get('perPage', 6)
   
         if keyword and keyword.strip() != '':
-            projects = Project.objects.filter(Q(title__icontains=keyword) | Q(description__icontains=keyword),employee_projects__employee=employee).order_by('-date_modified')
+            projects = Project.objects.filter(Q(title__icontains=keyword) | Q(description__icontains=keyword),employee_projects__employee=employee).order_by('-date_modified')[:6]
         else:
             projects = Project.objects.filter(employee_projects__employee=employee).order_by('-date_modified')
 
-        paginator = Paginator(projects, items_per_page)
-        page = paginator.get_page(page_number)
-        serializer = ProjectSerializer(projects, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        if not keyword:
+            paginator = Paginator(projects, items_per_page)
+            page = paginator.page(page_number)
+        
+            serializer = ProjectSerializer(page, many=True)
+            result ={
+                "project" : serializer.data,
+                "page_count" : paginator.num_pages,
+            }
+        else:
+            serializer = ProjectSerializer(projects, many=True)
+            result ={
+                "project" : serializer.data,
+                "page_count" : 1,
+            }
+        
+        return Response(result, status=status.HTTP_200_OK)
 
 class ProjectDetails(APIView):
     permission_classes = (IsAuthenticated,)

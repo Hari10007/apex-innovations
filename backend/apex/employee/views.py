@@ -7,6 +7,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Employee
 from rest_framework import status
 from django.contrib.auth import authenticate
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 
 # Create your views here.
@@ -103,3 +105,34 @@ class ChangePasswordView(APIView):
                 return Response({'message': 'Invalid old password.'}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'message': 'Password Fields is empty'}, status=status.HTTP_400_BAD_REQUEST)
+
+class ListEmployees(APIView):
+    permission_classes = (IsAuthenticated, )
+    def get(self, request):
+        admin = request.user
+        if admin.is_admin:
+            keyword = request.GET.get('keyword', '')
+            page_number = request.GET.get('page', 1)
+            items_per_page = request.GET.get('perPage', 10)
+
+            if keyword and keyword.strip() != '':
+                employees = Employee.objects.filter(Q(first_name__icontains=keyword) | Q(email__icontains=keyword),is_staff = False).order_by('-date_joined')[:10]
+                
+                serializer = EmployeeDetailSerializer(employees, many=True)
+                result ={
+                    "employees" : serializer.data,
+                    "page_count" : 1,
+                }
+            else:
+                employees = Employee.objects.filter(is_staff = False).order_by('-date_joined')
+                
+                paginator = Paginator(employees, items_per_page)
+                page = paginator.page(page_number)
+            
+                serializer = EmployeeDetailSerializer(page, many=True)
+                result ={
+                    "employees" : serializer.data,
+                    "page_count" : paginator.num_pages,
+                }
+
+            return Response(result, status=status.HTTP_200_OK)

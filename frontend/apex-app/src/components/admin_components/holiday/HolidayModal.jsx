@@ -34,7 +34,6 @@ function HolidayModal(props) {
                     date: moment(values.date).format('YYYY-MM-DD'),
                 });
 
-                console.log(response.data)
                 if (response.data) {
                     dispatch(setMessage({ message: response.data.message, type: response.data.status }));
                     props.onHide();

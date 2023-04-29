@@ -4,11 +4,11 @@ from django.conf import settings
 from .views import CheckIn, CheckOut, ListAttendance, AttendanceStatus, AttendanceLog
 
 urlpatterns = [
-    path('attendance/list', ListAttendance.as_view()),
-    path('attendance/check_in', CheckIn.as_view()),
-    path('attendance/check_out', CheckOut.as_view()),
-    path('attendance/status',AttendanceStatus.as_view()),
-    path('attendance/log',AttendanceLog.as_view()),
+    path('list', ListAttendance.as_view()),
+    path('check_in', CheckIn.as_view()),
+    path('check_out', CheckOut.as_view()),
+    path('status',AttendanceStatus.as_view()),
+    path('log',AttendanceLog.as_view()),
 
 ]
 

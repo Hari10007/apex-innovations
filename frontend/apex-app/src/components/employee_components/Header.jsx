@@ -13,7 +13,7 @@ function Header() {
   const [header, setHeader] = useState("");
   const employee = useSelector(selectUser);
   const imageURL = employee.image && "http://localhost:8000/api" + employee.image;
-  console.log(employee)
+
     
   useEffect(() => {
       let path = location.pathname.split('/');

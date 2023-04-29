@@ -13,6 +13,19 @@ const ProtectedRoute = ({ ...props }) => {
     } else {
         return <Navigate to={props.logoutPath} />;
     }
+
+//     if (employee && !employee?.admin && !employee?.manager && !adminOnly  && !managerOnly) {
+//         return <Outlet />;
+//     }
+//     else if (employee && employee?.manager  && managerOnly) {
+//         return <Outlet />;
+// } 
+//     else if (employee && employee?.admin  && adminOnly) {
+//             return <Outlet />;
+//     } else {
+//         return <Navigate to={props.logoutPath} />;
+//     }
+  
   
 }
 

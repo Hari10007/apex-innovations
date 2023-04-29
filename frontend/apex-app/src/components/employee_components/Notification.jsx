@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { selectNotificationLoader } from '../../redux-toolkit/loaderSlice';
 import { Badge, IconButton, Popover, List, ListItem, ListItemText, ListSubheader } from '@material-ui/core';
 import { Notifications } from '@material-ui/icons';
-import Divider from '@mui/material/Divider';
+import { Divider, Tooltip } from '@mui/material';
 import moment from 'moment';
 
 function Notification() {
@@ -60,11 +60,13 @@ function Notification() {
 
   return (
     <div className="notification mx-4">
-       <IconButton color="primary" onClick={handleClick}>
-        <Badge badgeContent={unread} color="secondary" overlap="rectangular">
-          <Notifications />
-        </Badge>
-      </IconButton>
+      <Tooltip title="Notifications">
+        <IconButton color="primary" onClick={handleClick}>
+          <Badge badgeContent={unread} color="secondary" overlap="rectangular">
+            <Notifications />
+          </Badge>
+        </IconButton>
+      </Tooltip>
 
       <Popover
         id={id}

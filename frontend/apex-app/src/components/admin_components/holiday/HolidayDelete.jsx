@@ -31,6 +31,7 @@ function HolidayDelete({ open, onClose, holiday, handle_holiday }) {
       // call API to delete holiday
       deleteHoliday(holiday);
     };
+    
   return (
     <>
 

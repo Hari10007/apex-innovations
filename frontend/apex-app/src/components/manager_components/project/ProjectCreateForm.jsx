@@ -86,7 +86,7 @@ function ProjectCreateForm() {
 
                 if (response.data) {
                     dispatch(setMessage({ message: response.data.message, type: response.data.status }));
-                    navigate('/project/project_list');
+                    navigate('/project/page/1');
                 }
             } 
             catch (error) {
@@ -95,7 +95,6 @@ function ProjectCreateForm() {
         },
     });
 
-    console.log(formik.values.Employees)
   return (
     <>
         <h2>Add New Project</h2>

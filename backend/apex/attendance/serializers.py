@@ -4,10 +4,14 @@ from .models import Attendance
 class AttendanceSerializer(serializers.ModelSerializer):
     check_in = serializers.SerializerMethodField()
     check_out = serializers.SerializerMethodField()
+    employee = serializers.SerializerMethodField()
 
     class Meta:
         model = Attendance
         fields = ['id', 'date', 'check_in', 'check_out', 'working_time', 'employee']
+    
+    def get_employee(self, obj):
+        return f"{obj.employee.first_name} {obj.employee.last_name}"
 
     def get_check_in(self, obj):
         check_ins = obj.check_in_outs.filter(is_check_in=True).order_by('time')

@@ -2,39 +2,50 @@ import React, { useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
 import useAxios from '../../../utilis/useAxios';
 import PaginationTag from '../../pagination/PaginationTag';
+import { useNavigate, useParams } from 'react-router-dom';
+import moment from 'moment';
+
 
 function AttendanceTable({ attendanceUpdated ,selectedDate }) {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(7);
+  
+  const params = useParams();
+  const currentPage =  parseInt(params.pageNumber);
   const [attendances, setAttendances] = useState([]);
+  const [pages, setPages] = useState();
+  const itemsPerPage = 7;
+  const navigate = useNavigate();
 
   const api = useAxios();
 
   useEffect(() => {
     async function fetchData() {
-     
-      const date = (selectedDate ? new Date(selectedDate.getTime() - (selectedDate.getTimezoneOffset() * 60000)).toISOString().slice(0, 10) : false)
-      const response = await api.get(
-        `api/attendance/list?page=${currentPage}&perPage=${itemsPerPage}&date=${date}`
-      );
+      try{
+        // const date = (selectedDate ? new Date(selectedDate.getTime() - (selectedDate.getTimezoneOffset() * 60000)).toISOString().slice(0, 10) : false)
+        const date = (selectedDate ? moment(selectedDate).format('YYYY-MM-DD') : false)
 
-      if (response.status === 200) {
-        setAttendances(response.data);
-      }
+        const response = await api.get(
+          `api/attendance/list?page=${currentPage}&perPage=${itemsPerPage}&date=${date}`
+          );
+          
+          if (response.status === 200) {
+            setAttendances(response.data.attendances);
+            setPages(response.data.page_count);
+            }
+        }catch(error){
+
+        }
     }
     fetchData();
   }, [currentPage, itemsPerPage, selectedDate, attendanceUpdated]);
 
   const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
+    navigate(`/attendance/page/${pageNumber}`);
   };
 
-  const pages = Math.ceil(attendances.length / itemsPerPage);
+
   const pageNumbers = Array.from({ length: pages }, (_, i) => i + 1);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentItems = attendances.slice(startIndex, endIndex);
 
   return (
     <div className='container'>
@@ -49,7 +60,7 @@ function AttendanceTable({ attendanceUpdated ,selectedDate }) {
           </tr>
         </thead>
         <tbody>
-          {currentItems.map((attendance, index) => (
+          {attendances.map((attendance, index) => (
             <tr key={index}>
               <td>{startIndex + index + 1}</td>
               <td>{attendance.date}</td>

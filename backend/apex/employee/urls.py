@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
-from .views import RegisterView, RefreshTokenView, LoginView, LogoutView, EmployeeProfile, ChangePasswordView
+from .views import RegisterView, RefreshTokenView, LoginView, LogoutView, EmployeeProfile, ChangePasswordView, ListEmployees
 
 urlpatterns = [
     path('register', RegisterView.as_view()),
@@ -10,7 +10,7 @@ urlpatterns = [
     path('profile', EmployeeProfile.as_view()),
     path('update_password', ChangePasswordView.as_view()),
     path('logout', LogoutView.as_view()),
-    # path('notification', ListNotification.as_view())
+    path('employees/list', ListEmployees.as_view())
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

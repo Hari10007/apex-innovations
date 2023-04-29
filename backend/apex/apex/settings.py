@@ -53,7 +53,10 @@ INSTALLED_APPS = [
     'payment',
     'leave',
     'project',
-    'notification'
+    'notification',
+    'salary',
+    'django_crontab',
+    'django_cron',
 ]
 
 MIDDLEWARE = [
@@ -75,6 +78,15 @@ REST_FRAMEWORK = {
     )
 }
 
+
+CRONJOBS = [
+    ('0 0 1 * *', 'salary.cron.create_employee_salary')
+]
+
+CRON_CLASSES = [
+    "salary.cron.CreateEmployeeSalaryCronJob",
+    # ...
+]
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours = 1),
