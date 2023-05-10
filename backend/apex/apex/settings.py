@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'environ',
     'corsheaders',
     'mptt',
-    'django_crontab',
     'django_cron',
     'daphne',
     'channels',
@@ -189,37 +188,37 @@ LOGGING = {
 #     }
 # }
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'apex_innovation',
-        'USER': 'root',
-        'PASSWORD': 'Harix123#',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-                    'charset': 'utf8mb4',
-                    'use_unicode': True, 
-        }
-    },
-    
-}
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'apex_innovation',
-#         'USER': 'root',
-#         'PASSWORD': '5Xh1EI4TsgIpbsCPD1xC',
-#         'HOST': 'apex.cdlu3ufsfwza.ap-south-1.rds.amazonaws.com',
-#         'PORT': '3306',
-#         'OPTIONS': {
-#             'charset': 'utf8mb4',
-#             'use_unicode': True,
-#         },
-#     },
-# }
+if (DEBUG):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'apex_innovation',
+            'USER': 'root',
+            'PASSWORD': 'Harix123#',
+            'HOST': 'localhost',
+            'PORT': '3306',
+            'OPTIONS': {
+                        'charset': 'utf8mb4',
+                        'use_unicode': True, 
+            }
+        },
+        
+    }
+else: 
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'apex_innovation',
+            'USER': 'root',
+            'PASSWORD': '5Xh1EI4TsgIpbsCPD1xC',
+            'HOST': 'apex.cdlu3ufsfwza.ap-south-1.rds.amazonaws.com',
+            'PORT': '3306',
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+                'use_unicode': True,
+            },
+        },
+    }
 
 
 # Password validation
