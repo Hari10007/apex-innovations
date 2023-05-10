@@ -204,21 +204,27 @@ if (DEBUG):
         },
         
     }
-else: 
+else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'apex_innovation',
-            'USER': 'root',
-            'PASSWORD': '5Xh1EI4TsgIpbsCPD1xC',
-            'HOST': 'apex.cdlu3ufsfwza.ap-south-1.rds.amazonaws.com',
-            'PORT': '3306',
-            'OPTIONS': {
-                'charset': 'utf8mb4',
-                'use_unicode': True,
-            },
-        },
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.mysql',
+    #         'NAME': 'apex_innovation',
+    #         'USER': 'root',
+    #         'PASSWORD': '5Xh1EI4TsgIpbsCPD1xC',
+    #         'HOST': 'apex.cdlu3ufsfwza.ap-south-1.rds.amazonaws.com',
+    #         'PORT': '3306',
+    #         'OPTIONS': {
+    #             'charset': 'utf8mb4',
+    #             'use_unicode': True,
+    #         },
+    #     },
+    # }
 
 
 # Password validation
