@@ -10,7 +10,7 @@ channels-redis==4.1.0
 django-environ==0.10.0
 django-mptt==0.14.0
 djangorestframework==3.14.0
-djangorestframework-simplejwt 5.2.2
+djangorestframework-simplejwt==5.2.2
 django-redis== 5.2.0
 redis==4.5.4
 mysqlclient==2.1.1
@@ -20,3 +20,4 @@ sqlparse==0.4.3
 tzdata==2022.7
 PyJWT
 Pillow
+environ
