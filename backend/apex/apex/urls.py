@@ -15,15 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+import chat.routing
+import notification.routing
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('__debug__/', include('debug_toolbar.urls')),
     path('api/',include('employee.urls')),
-    path('api/attendance', include('attendance.urls')),
+    path('api/attendance/', include('attendance.urls')),
     path('api/holiday/', include('holiday.urls')),
     path('api/', include('payment.urls')),
     path('api/leave/', include('leave.urls')),
     path('api/project/', include('project.urls')),
     path('api/notification/', include('notification.urls')),
+    # path('ws/', include(chat.routing.websocket_urlpatterns)),
+    # path('ws/', include(notification.routing.websocket_urlpatterns)),
     path('api/salary/', include('salary.urls')),
+    path('api/chat/', include('chat.urls')),
 ]

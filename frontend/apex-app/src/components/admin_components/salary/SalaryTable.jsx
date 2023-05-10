@@ -8,7 +8,7 @@ import useAxios from '../../../utilis/useAxios';
 import { useNavigate, useParams } from 'react-router-dom';
 import PaginationTag from '../../pagination/PaginationTag';
 
-function SalaryTable() {
+function SalaryTable({searchValue}) {
   const params = useParams();
   const [employees, setEmployees] = useState([]);
   const [pages, setPages] = useState();
@@ -19,7 +19,7 @@ function SalaryTable() {
 
   const fetchEmployees = async()=>{
     try{
-      let response = await api.get(`api/employees/list?page=${currentPage}&perPage=${itemsPerPage}`);
+      let response = await api.get(`employees/list?page=${currentPage}&perPage=${itemsPerPage}&keyword=${searchValue}`);
 
       if (response.status === 200){
           setEmployees(response.data.employees);
@@ -33,7 +33,7 @@ function SalaryTable() {
 
   useEffect(()=>{
     fetchEmployees();
-  },[currentPage, itemsPerPage])
+  },[currentPage, itemsPerPage, searchValue])
 
   const handlePageChange = (pageNumber) => {
     navigate(`/salary/page/${pageNumber}`);

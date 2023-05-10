@@ -20,7 +20,7 @@ function LeaveRequestList() {
         
         try{
             const response = await api.get(
-                `api/leave/leave_requests?page=${currentPage}&perPage=${itemsPerPage}`
+                `leave/leave_requests?page=${currentPage}&perPage=${itemsPerPage}`
               );
 
             if(response.status === 200){

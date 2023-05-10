@@ -15,7 +15,7 @@ function AttendanceLog({attendanceUpdated, selectedDate}) {
       try {
         const date = (selectedDate ? new Date(selectedDate.getTime() - (selectedDate.getTimezoneOffset() * 60000)).toISOString().slice(0, 10) : currentDate)
         
-        const response = await api.get(`api/attendance/log?&date=${date}`);
+        const response = await api.get(`attendance/log?&date=${date}`);
 
         if (response.status === 200) {
           setAttendanceLogs(response.data.log);

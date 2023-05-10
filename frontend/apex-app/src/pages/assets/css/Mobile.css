@@ -1,0 +1,6 @@
+  @media screen and (max-width: 768px) {
+    .container {
+      margin-left: 50px;
+      width: calc(100% - 50px);
+    }
+  }

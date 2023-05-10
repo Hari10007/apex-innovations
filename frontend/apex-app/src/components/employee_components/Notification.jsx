@@ -9,19 +9,23 @@ import { Badge, IconButton, Popover, List, ListItem, ListItemText, ListSubheader
 import { Notifications } from '@material-ui/icons';
 import { Divider, Tooltip } from '@mui/material';
 import moment from 'moment';
+import { selectUser } from '../../redux-toolkit/userSlice';
 
 function Notification() {
+  const employee = useSelector(selectUser);
   const [unread, setUnread] = useState(0);
   const [notifications ,setNotifications] = useState(false);
   const api = useAxios();
   const loading = useSelector(selectNotificationLoader)
   const [anchorEl, setAnchorEl] = useState(null);
 
+  
+  const open = Boolean(anchorEl);
+  const id = open && 'notification-popover'   
+
   const fetchNotification = async() =>{
-
-
     try {
-      const response = await api.get("api/notification/notifications");
+      const response = await api.get("notification/notifications");
       if (response.status === 200) {
         setNotifications(response.data.notifications);
         setUnread(response.data.count);
@@ -32,14 +36,37 @@ function Notification() {
   }
 
   const resetCount = async()=>{
-    const response = await api.post("api/notification/reset_notification");
+    const response = await api.post("notification/reset_notification");
     
     if (response.status === 200){
         setUnread(response.data)
     }
   }
 
+  const connectWebsocket = () => {
+    const socket = new WebSocket(`ws://localhost:8000/ws/notifications/${employee.id}/`);
+
+    socket.addEventListener('open', (event) => {
+        console.log('WebSocket connection established');
+    });
+
+    socket.addEventListener('message', (event) => {
+        const message = JSON.parse(event.data);
+        console.log('Received message:', message);
+        fetchNotification();
+    });
+
+    socket.addEventListener('close', (event) => {
+        console.log('WebSocket connection closed');
+    });
+
+    socket.addEventListener('error', (event) => {
+        console.error('WebSocket error:', event);
+    });
+  }
+
   useEffect(() => {
+    connectWebsocket();
     fetchNotification();
   }, []);
 
@@ -54,8 +81,13 @@ function Notification() {
     setAnchorEl(null);
   };
 
-  const open = Boolean(anchorEl);
-  const id = open ? 'notification-popover' : undefined;
+
+  // useEffect(() => {
+  //   if (open) {
+  //     console.log(open)
+  //     resetCount();
+  //   }
+  // }, [open]);
 
 
   return (
@@ -130,25 +162,6 @@ function Notification() {
             </div>
         </List>
       </Popover>
-      {/* <i className="fa-regular fa-bell" onClick={handleClick} />
-      {unread > 0 && <span className="badge">{unread}</span>}
-      {showList &&
-         <div className="notification-list">
-           {loading ? (
-              <Spinner animation="border" role="status" style={{zIndex: 9999}}>
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
-            ) : (
-            <ul>
-              {notifications && notifications.length > 0  ? notifications?.map((notification, index) => (
-                <li key={index}>{notification.message}</li>
-              )) : (
-                <p>No Notifications</p>
-              )}
-            </ul>
-          )}
-       </div>
-      } */}
     </div>
   );
 }

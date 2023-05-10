@@ -6,6 +6,7 @@ import { useState } from 'react';
 import moment from 'moment';
 import HolidayUpdateModal from './HolidayUpdateModal';
 import HolidayDelete from './HolidayDelete';
+import ModalLoader from '../../loader/ModalLoader';
 
 function HolidayTable({handle_holiday, holidayUpdated}) {
     const [holidays, setHolidays] = useState([]);
@@ -20,7 +21,7 @@ function HolidayTable({handle_holiday, holidayUpdated}) {
         const currentYear = new Date().getFullYear();
 
         const response = await api.get(
-            `api/holiday/list?&year=${currentYear}`
+            `holiday/list?&year=${currentYear}`
         );
 
         if (response.status === 200) {
@@ -74,6 +75,7 @@ function HolidayTable({handle_holiday, holidayUpdated}) {
 
           ))}
         </tbody>
+        <ModalLoader />
         <HolidayDelete handle_holiday={handle_holiday}  holiday={holiday} open={open} onClose={() => handleClose()}/>
         <HolidayUpdateModal handle_holiday={handle_holiday}  holiday={holiday} show={modalShow} onHide={() => setModalShow(false)}/>
       </Table>

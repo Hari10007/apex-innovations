@@ -28,7 +28,7 @@ function MarkAttendance({handleAttendanceUpdate, selectedDate}) {
       let now = new Date();
       const currentDate = moment(now).format('YYYY-MM-DD');
 
-      const response = await api.get(`api/attendance/status?&date=${currentDate}`);
+      const response = await api.get(`attendance/status?&date=${currentDate}`);
 
       if (response.status === 200) {
         setLastCheck(response.data.status)
@@ -48,10 +48,10 @@ function MarkAttendance({handleAttendanceUpdate, selectedDate}) {
     try {
       const now = new Date();
       const currentTime = now.toLocaleTimeString('en-US', { hour12: false });
-      // const currentDate =  new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, 10);
+
       const currentDate = moment(now).format('YYYY-MM-DD');
   
-      let response = await api.post('api/attendance/check_in', {time: currentTime, date: currentDate});
+      let response = await api.post('attendance/check_in', {time: currentTime, date: currentDate});
 
       if(response.status === 200){
         setLastCheck("True")
@@ -67,9 +67,9 @@ function MarkAttendance({handleAttendanceUpdate, selectedDate}) {
     try {
       const now = new Date();
       const currentTime = now.toLocaleTimeString('en-US', { hour12: false });
-      // const currentDate= now.toISOString().slice(0, 10);
+
       const currentDate = moment(now).format('YYYY-MM-DD');
-      let response = await api.post('api/attendance/check_out',{time: currentTime, date: currentDate});
+      let response = await api.post('attendance/check_out',{time: currentTime, date: currentDate});
 
       if(response.status === 200){
         setLastCheck("False")

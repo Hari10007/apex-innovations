@@ -19,7 +19,7 @@ function EmployeeDetail({ profileUpdated }) {
   useEffect(() => {
     async function fetchData() {
 
-      let response = await api.get('api/profile');
+      let response = await api.get('profile');
 
       if (response.status === 200) {
         setEmployee(response.data);

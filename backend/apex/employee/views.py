@@ -9,7 +9,8 @@ from rest_framework import status
 from django.contrib.auth import authenticate
 from django.core.paginator import Paginator
 from django.db.models import Q
-
+from django.core.exceptions import ObjectDoesNotExist
+from chat.serializers import EmployeeChatSerializer
 
 # Create your views here.
 
@@ -136,3 +137,21 @@ class ListEmployees(APIView):
                 }
 
             return Response(result, status=status.HTTP_200_OK)
+
+class CheckEmployee(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request):
+        current_user = request.user
+        employee_id = request.GET.get('employee_id')
+
+        employee = Employee.objects.filter(id=int(employee_id)).first()
+
+        if not employee:
+            return Response({'message': 'Employee not present'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if employee == current_user:
+            return Response({'message': 'You cannot chat yourself!'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = EmployeeChatSerializer(employee)
+            return Response(serializer.data, status=status.HTTP_200_OK)

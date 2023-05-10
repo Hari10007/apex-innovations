@@ -33,7 +33,7 @@ function HolidayUpdateModal(props) {
             onSubmit: async (values) => {
 
             try {
-                const response = await api.post(`api/holiday/update/${values.id}`, {
+                const response = await api.post(`holiday/update/${values.id}`, {
                     name: values.name,
                     date: moment(values.date).format('YYYY-MM-DD'),
                 });

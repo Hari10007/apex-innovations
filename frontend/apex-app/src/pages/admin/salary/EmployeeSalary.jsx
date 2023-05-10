@@ -16,7 +16,7 @@ function EmployeeSalary() {
             <div className='col-md-3 my-3'>
                 <input type="text" className="form-control" onChange={handleSearch} value={searchValue}  placeholder='Search Employee here' />
             </div>
-            <SalaryTable />
+            <SalaryTable  searchValue={searchValue} />
         </div>
     )
 }

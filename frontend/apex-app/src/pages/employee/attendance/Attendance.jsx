@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import Loader from '../../../components/loader/Loader';
 import AlertMessage from '../../../components/alert/Alert';
 import { Outlet } from 'react-router-dom';
-
+// import "../../assets/css/Mobile.css"
 
 function AttendancePage() {
 

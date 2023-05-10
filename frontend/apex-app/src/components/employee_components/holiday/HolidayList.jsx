@@ -14,7 +14,7 @@ function HolidayList({ holidayUpdated }) {
       const currentYear = new Date().getFullYear();
 
       const response = await api.get(
-        `api/holiday/list?&year=${currentYear}`
+        `holiday/list?&year=${currentYear}`
       );
 
       if (response.status === 200) {

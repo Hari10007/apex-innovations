@@ -28,7 +28,7 @@ function LeaveList() {
     const fetchLeave = async ()=>{
         const currentYear = new Date().getFullYear();
         try{
-            const response = await api.get(`api/leave/status?&year=${currentYear}`);
+            const response = await api.get(`leave/status?&year=${currentYear}`);
 
             if(response.status === 200){
                 setCasual(response.data['Casual']);

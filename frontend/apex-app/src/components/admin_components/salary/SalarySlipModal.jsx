@@ -13,7 +13,7 @@ function SalarySlipModal(props) {
     const handleSubmit = async(e) =>{
         e.preventDefault();
         try{
-            let response = await api.post('api/salary/generate_slip',{
+            let response = await api.post('salary/generate_slip',{
                 'employee': props.employee_salary.employee,
                 'employee_salary': props.employee_salary.id,
                 'date': moment(new Date()).format('YYYY-MM-DD')

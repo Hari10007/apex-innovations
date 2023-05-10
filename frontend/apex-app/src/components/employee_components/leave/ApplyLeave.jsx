@@ -21,7 +21,7 @@ function ApplyLeave(props) {
 
     const fetchLeaveType = async ()=>{
         try{
-            const response = await api.get('api/leave/leave_types');
+            const response = await api.get('leave/leave_types');
             if(response.status === 200){
                 setLeaveTypes(response.data);
             }
@@ -55,7 +55,7 @@ function ApplyLeave(props) {
             onSubmit: async (values) => {
 
             try {
-                const response = await api.post('api/leave/leave_request', {
+                const response = await api.post('leave/leave_request', {
                     leave_type: values.leaveType,
                     start_date: moment(values.startDate).format('YYYY-MM-DD'),
                     end_date: moment(values.endDate).format('YYYY-MM-DD'),

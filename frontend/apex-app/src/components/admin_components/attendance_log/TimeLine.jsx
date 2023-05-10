@@ -12,66 +12,68 @@ import useAxios from '../../../utilis/useAxios';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import moment from 'moment';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectAttendanceLog, setAttendanceLog } from '../../../redux-toolkit/attendanceLogSlice';
 
-function TimeLine() {
+
+function TimeLine({date, setTotalHour}) {
     let api = useAxios()
     const params = useParams();
-    const attendanceLogs = useSelector(selectAttendanceLog);
 
-
-    const dispatch = useDispatch();
+    const [attendanceLogs, setAttendanceLog] = useState([]);
 
     useEffect(() => {
     
         async function fetchData() {
-        try {
-            
-            const response = await api.get(`api/attendance/log?&attendance=${params?.id}`);
+            try {
+                const select_date =  date ? moment(date).format('YYYY-MM-DD') :  moment(new Date()).format('YYYY-MM-DD')
+                const response = await api.get(`attendance/log?&date=${select_date}&employee=${params?.id}`);
 
-            if (response.status === 200) {
-                // console.log(response.data)
-                dispatch(setAttendanceLog({ log: response.data.log, total_hours: response.data.total_hours }));
+                if (response.status === 200) {
+                    if (response.data.message){
+                        setAttendanceLog([]);
+                    }else{
+                        setAttendanceLog(response.data.log);
+                        setTotalHour(response.data.total_hours)
+                        console.log(response.data.total_hours)
+                    }
+                }
+            } catch (error) {
+                console.error(error.message);
             }
-        } catch (error) {
-            console.error(error.message);
-        }
         }
     
         fetchData();
-    }, []);
+    }, [date]);
     
   return (
     <>
         <Timeline position="alternate">
             {attendanceLogs?.map((attendanceLog, index) =>(
                 <>
-                {attendanceLog?.is_check_in ? 
+                    {attendanceLog?.is_check_in ? 
+                            <TimelineItem>
+                                <TimelineOppositeContent color="text.secondary">
+                                    {moment(attendanceLog.time, 'HH:mm:ss').format('h:mm A')}
+                                </TimelineOppositeContent>
+                                <TimelineSeparator>
+                                    <TimelineDot  style={{ backgroundColor: green[900] }}/>
+                                    <TimelineConnector />
+                                </TimelineSeparator>
+                                <TimelineContent> Logged In</TimelineContent>
+                            </TimelineItem>
+                        :
+
                         <TimelineItem>
                             <TimelineOppositeContent color="text.secondary">
                                 {moment(attendanceLog.time, 'HH:mm:ss').format('h:mm A')}
                             </TimelineOppositeContent>
                             <TimelineSeparator>
-                                <TimelineDot  style={{ backgroundColor: green[900] }}/>
-                                <TimelineConnector />
+                            <TimelineDot  style={{ backgroundColor: red[500] }}/>
+                            <TimelineConnector />
                             </TimelineSeparator>
-                            <TimelineContent> Logged In</TimelineContent>
+                            <TimelineContent> Logged Out</TimelineContent>
                         </TimelineItem>
-                    :
-
-                    <TimelineItem>
-                        <TimelineOppositeContent color="text.secondary">
-                            {moment(attendanceLog.time, 'HH:mm:ss').format('h:mm A')}
-                        </TimelineOppositeContent>
-                        <TimelineSeparator>
-                        <TimelineDot  style={{ backgroundColor: red[500] }}/>
-                        <TimelineConnector />
-                        </TimelineSeparator>
-                        <TimelineContent> Logged Out</TimelineContent>
-                    </TimelineItem>
-                }
-                    </>
+                    }
+                </>
             ))}
         </Timeline>
     </>

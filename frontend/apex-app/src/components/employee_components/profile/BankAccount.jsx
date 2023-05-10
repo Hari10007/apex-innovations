@@ -19,7 +19,7 @@ function BankAccount(props) {
     e.preventDefault();
 
     try {
-      let response = await api.post('api/add_account', 
+      let response = await api.post('add_account', 
         {
           'account_number': accountNumber,
           'name': name,

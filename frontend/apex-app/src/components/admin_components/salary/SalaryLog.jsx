@@ -32,7 +32,7 @@ function SalaryLog({date}) {
 
     const fetchSalaryLog = async()=>{
         try{
-        let response = await api.get(`api/salary/list?employee=${params?.id}&page=${currentPage}&perPage=${itemsPerPage}&date=${date}`);
+        let response = await api.get(`salary/list?employee=${params?.id}&page=${currentPage}&perPage=${itemsPerPage}&date=${date}`);
 
         if (response.status === 200){
             setEmployeeSalaries(response.data.employee_salaries);
@@ -73,6 +73,7 @@ function SalaryLog({date}) {
             <th>Action</th>
           </tr>
         </thead>
+        
         <tbody>
         {employee_salaries?.map((employee_salary, index) => (
             <tr key={index}>
@@ -90,7 +91,7 @@ function SalaryLog({date}) {
         </tbody>
       </Table>
         
-        <SalarySlipModal handle_salary={handle_salary} employee_salary={employee_salary} show={modalShow} onHide={() => setModalShow(false)}/>
+       <SalarySlipModal handle_salary={handle_salary} employee_salary={employee_salary} show={modalShow} onHide={() => setModalShow(false)}/>
        <PaginationTag currentPage={currentPage} pageNumbers={pageNumbers} handlePageChange={handlePageChange}/>
     </>
   )

@@ -32,21 +32,34 @@ DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = []
 
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
+
 
 # Application definition
 
 INSTALLED_APPS = [
+    'debug_toolbar',
+    'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
+    'environ',
+    'corsheaders',
+    'mptt',
+    'django_crontab',
+    'django_cron',
+    'daphne',
+    'channels',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'rest_framework_simplejwt.token_blacklist',
-    'mptt',
-    'environ',
-    'corsheaders',
+
     'employee',
     'attendance',
     'holiday',
@@ -55,12 +68,12 @@ INSTALLED_APPS = [
     'project',
     'notification',
     'salary',
-    'django_crontab',
-    'django_cron',
+    'chat',
 ]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -79,9 +92,9 @@ REST_FRAMEWORK = {
 }
 
 
-CRONJOBS = [
-    ('0 0 1 * *', 'salary.cron.create_employee_salary')
-]
+# CRONJOBS = [
+#     ('0 0 1 * *', 'salary.cron.create_employee_salary')
+# ]
 
 CRON_CLASSES = [
     "salary.cron.CreateEmployeeSalaryCronJob",
@@ -136,6 +149,35 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'apex.wsgi.application'
 
+#chat
+ASGI_APPLICATION = "apex.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+            # "hosts": [("redis://default:88ks3di5AYknRoGfybPvMbe5bO695ybd@redis-14200.c81.us-east-1-2.ec2.cloud.redislabs.com:14200")]
+        },
+    },
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'channels': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -155,9 +197,29 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': 'Harix123#',
         'HOST': 'localhost',
-        'PORT': '3306'
-    }
+        'PORT': '3306',
+        'OPTIONS': {
+                    'charset': 'utf8mb4',
+                    'use_unicode': True, 
+        }
+    },
+    
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'apex_innovation',
+#         'USER': 'root',
+#         'PASSWORD': '5Xh1EI4TsgIpbsCPD1xC',
+#         'HOST': 'apex.cdlu3ufsfwza.ap-south-1.rds.amazonaws.com',
+#         'PORT': '3306',
+#         'OPTIONS': {
+#             'charset': 'utf8mb4',
+#             'use_unicode': True,
+#         },
+#     },
+# }
 
 
 # Password validation
@@ -218,21 +280,9 @@ AUTH_USER_MODEL = 'employee.Employee'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
-
-RAZORPAY_API_KEY = env('RAZORPAY_API_KEY')
-RAZORPAY_SECRET_KEY = env('RAZORPAY_SECRET_KEY')
-STRIPE_API_KEY = env('STRIPE_API_KEY')
-
 EMAIL_BACKEND = env('EMAIL_BACKEND')
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST = env('EMAIL_HOST')
 EMAIL_PORT = int(env('EMAIL_PORT'))
 EMAIL_USE_TLS = env('EMAIL_USE_TLS') == 'True'
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' 
-# EMAIL_HOST_USER = 'harikrishnansr007@gmail.com' 
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587 
-# EMAIL_USE_TLS = True 
-# EMAIL_HOST_PASSWORD = "whpgwtjawrytdrwf"

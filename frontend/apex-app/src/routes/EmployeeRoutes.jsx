@@ -18,7 +18,6 @@ import NoMatchPage from '../pages/employee/NoMatchPage'
 import ProjectList from '../pages/employee/project/ProjectList'
 import CreateProject from '../pages/employee/project/CreateProject'
 import ProjectDetails from '../pages/employee/project/ProjectDetails'
-import Employees from '../pages/admin/Employees'
 import Salary from '../pages/admin/salary/Salary'
 import AdminDashboardPage from '../pages/admin/AdminDashboard'
 import AttendanceLog from '../pages/admin/attendance/AttendanceLog'
@@ -28,6 +27,13 @@ import EmployeeSalary from '../pages/admin/salary/EmployeeSalary'
 import AttendanceList from '../pages/employee/attendance/AttendanceList'
 import SalaryDetails from '../pages/admin/salary/SalaryDetails'
 import EmployeeSalaryLog from '../pages/admin/salary/EmployeeSalaryLog'
+import ChatPage from '../pages/employee/chat/ChatPage'
+import ChatList from '../pages/employee/chat/ChatList'
+import ChatDetail from '../pages/employee/chat/ChatDetail'
+import EmployeesPage from '../pages/admin/employees/Employees'
+import EmployeeListPage from '../pages/admin/employees/EmployeeList'
+import EmployeeUpdatePage from '../pages/admin/employees/EmployeeUpdate'
+import EmployeeCreatePage from '../pages/admin/employees/EmployeeCreate'
 
 function LoginRoute() {
     const employee = useSelector(selectUser);
@@ -64,6 +70,7 @@ function EmployeeRoutes() {
                         <Route index element={<Navigate to="page/1" replace />} />
                         <Route path="page/:pageNumber" element={<AttendanceList/>} />
                       </Route>
+      
                       <Route path="project" element={<ProjectPage />} >
                         <Route index element={<Navigate to="page/1" replace />} />
                         <Route path="page/:pageNumber" element={<ProjectList/>} />
@@ -75,6 +82,12 @@ function EmployeeRoutes() {
 
                   <Route path="holiday" element={<HolidayPage />} />
                   <Route path="leave" element={<LeavePage />} />
+                  <Route path="chat" element={<ChatPage />}>
+                        <Route index element={<Navigate to="lists" replace />} />
+                        <Route path="lists" element={<ChatList/>} />
+                        <Route path=":id" element={<ChatDetail/>} />
+                  </Route>
+
                   {employee?.manager && 
                     <>
                       <Route path="dashboard" element={<DashboardPage />} />
@@ -89,10 +102,15 @@ function EmployeeRoutes() {
                   {employee?.admin && 
                     <>
                       <Route path="admin_dashboard" element={<AdminDashboardPage />} />
-                      <Route path="employees" element={<Employees />} />
+                      <Route path="employees" element={<EmployeesPage/>} >
+                        <Route index element={<Navigate to="page/1" replace />} />
+                        <Route path="page/:pageNumber" element={<EmployeeListPage/>} />
+                        <Route path="update/:id" element={<EmployeeUpdatePage/>} />
+                        <Route path="create" element={<EmployeeCreatePage/>} />
+                      </Route>
                       <Route path="attendances" element={<AdminAttendancePage/>} >
-                        <Route index element={<Navigate to="log" replace />} />
-                        <Route path="log" element={<AttendanceLog/>} />
+                        <Route index element={<Navigate to="page/1" replace />} />
+                        <Route path="page/:pageNumber" element={<AttendanceLog/>} />
                         <Route path="log/:id" element={<AttendanceTimeLine/>} />
                       </Route>
                       <Route path="salary" element={<Salary/>} >

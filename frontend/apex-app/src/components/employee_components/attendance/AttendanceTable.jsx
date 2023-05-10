@@ -24,7 +24,7 @@ function AttendanceTable({ attendanceUpdated ,selectedDate }) {
         const date = (selectedDate ? moment(selectedDate).format('YYYY-MM-DD') : false)
 
         const response = await api.get(
-          `api/attendance/list?page=${currentPage}&perPage=${itemsPerPage}&date=${date}`
+          `attendance/list?page=${currentPage}&perPage=${itemsPerPage}&date=${date}`
           );
           
           if (response.status === 200) {

@@ -33,9 +33,13 @@ class AttendanceLog(APIView):
         employee = request.user
 
         if employee.is_admin:
-            attendance_id = int(request.GET.get('attendance'))
-            attendance = Attendance.objects.get(id=attendance_id)
+
+            employee_id = int(request.GET.get('employee'))
+            employee_staff = Employee.objects.get(id= employee_id)
   
+            current_date=request.GET.get('date')
+            attendance = Attendance.objects.filter(employee=employee_staff, date=current_date).first()
+
             if attendance:
                 check_in_out_list = []
                 for check_in_out in attendance.check_in_outs.all():
@@ -49,8 +53,11 @@ class AttendanceLog(APIView):
                     "total_hours": attendance.working_time
                 }
                 return Response(result)
+            else:
+                return Response({'message':"No Logs Found"})
         else:
             current_date = request.GET.get('date')
+
             attendance = Attendance.objects.filter(employee=employee, date=current_date).first()
             if attendance:
                 check_in_out_list = []

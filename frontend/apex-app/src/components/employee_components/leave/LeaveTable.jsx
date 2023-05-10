@@ -17,7 +17,7 @@ function LeaveTable({leaveUpdated}) {
         
         try{
             const response = await api.get(
-                `api/leave/list?page=${currentPage}&perPage=${itemsPerPage}`
+                `leave/list?page=${currentPage}&perPage=${itemsPerPage}`
               );
 
             if(response.status === 200){

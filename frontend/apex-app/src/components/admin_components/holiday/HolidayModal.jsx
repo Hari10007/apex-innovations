@@ -9,6 +9,7 @@ import moment from 'moment';
 import useAxios from '../../../utilis/useAxios';
 import { setMessage } from '../../../redux-toolkit/messageSlice';
 import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
 
 function HolidayModal(props) {
     const api = useAxios();
@@ -29,7 +30,7 @@ function HolidayModal(props) {
             onSubmit: async (values) => {
 
             try {
-                const response = await api.post('api/holiday/create', {
+                const response = await api.post('holiday/create', {
                     name: values.name,
                     date: moment(values.date).format('YYYY-MM-DD'),
                 });
@@ -46,6 +47,13 @@ function HolidayModal(props) {
             }
         },
     });
+
+
+    useEffect(() => {
+        formik.resetForm();
+    }, [props.show]);
+
+
   return (
     <>
         <Modal
@@ -88,7 +96,7 @@ function HolidayModal(props) {
                                         {formik.errors.date}
                                     </Form.Control.Feedback>
                                 }
-                            </Form.Group>
+                    </Form.Group>
 
 
                     <Button variant="primary" type="submit" className="text-center">

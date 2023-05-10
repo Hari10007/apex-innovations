@@ -6,7 +6,7 @@ import { logout, updateUser } from '../redux-toolkit/userSlice';
 import Cookies from 'js-cookie';
 import { startNotificationLoader, startPageLoader, stopNotificationLoader, stopPageLoader } from '../redux-toolkit/loaderSlice';
 
-const baseURL = 'http://localhost:8000/'
+const baseURL = 'http://localhost:8000/api/'
 
 const useAxios = () => {
     const dispatch = useDispatch('')
@@ -26,7 +26,7 @@ const useAxios = () => {
 
 
     axiosInstance.interceptors.request.use(async req => {
-        if (req.url !== "api/notification/reset_notification"){
+        if (req.url !== "notification/reset_notification"){
             dispatch(startPageLoader());
         }else{
             dispatch(startNotificationLoader());
@@ -35,7 +35,7 @@ const useAxios = () => {
         
 
         if (access_token === null) {
-            const response = await axios.post(`${baseURL}/api/refresh-token/`, {
+            const response = await axios.post(`${baseURL}refresh-token/`, {
                 refresh: refresh_token
             });
 

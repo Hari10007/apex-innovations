@@ -18,7 +18,7 @@ function HolidayDelete({ open, onClose, holiday, handle_holiday }) {
     };
 
     const deleteHoliday = async(holiday) =>{
-        const response = await api.delete(`api/holiday/delete/${holiday.id}`)
+        const response = await api.delete(`holiday/delete/${holiday.id}`)
 
         if(response.status === 200){
             dispatch(setMessage({ message: response.data.message, type: response.data.status }));

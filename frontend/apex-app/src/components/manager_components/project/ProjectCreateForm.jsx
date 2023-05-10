@@ -36,7 +36,7 @@ function ProjectCreateForm() {
 
     const fetchEmployees = async ()=>{
         try{
-            const response = await api.get('api/project/list_employees');
+            const response = await api.get('project/list_employees');
 
             if (response.status === 200){
                 setEmployees(response.data)
@@ -49,7 +49,7 @@ function ProjectCreateForm() {
 
     const fetchStatusField = async()=>{
         try{
-            const response = await api.get('api/project/status_choices');
+            const response = await api.get('project/status_choices');
             if(response.status === 200){
                 setStatusChoices(response.data)
             }
@@ -79,7 +79,7 @@ function ProjectCreateForm() {
                 formData.append('employee_mails', JSON.stringify(values.Employees));
                 formData.append('status', values.status);
 
-                const response = await api.post('api/project/create', formData, {
+                const response = await api.post('project/create', formData, {
                     headers: {
                     'Content-Type': 'multipart/form-data',
                     }});

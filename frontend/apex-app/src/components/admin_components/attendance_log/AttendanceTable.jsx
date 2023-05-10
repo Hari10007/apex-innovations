@@ -5,44 +5,42 @@ import PaginationTag from '../../pagination/PaginationTag';
 import { Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
-function AttendanceTable() {
-
-  const [currentPage, setCurrentPage] = useState(parseInt(sessionStorage.getItem('attendance_currentPage') || 1));
-  const itemsPerPage = 10;
-  const [attendances, setAttendances] = useState([]);
+function AttendanceTable({searchValue}) {
+  const params = useParams();
+  const [employees, setEmployees] = useState([]);
   const [pages, setPages] = useState();
-  const navigate = useNavigate();
-
   const api = useAxios();
-
-  useEffect(() => {
-    async function fetchData() {
-     
-      const date = false
-      const response = await api.get(
-        `api/attendance/list?page=${currentPage}&perPage=${itemsPerPage}&date=${date}`
-      );
-
-      if (response.status === 200) {
-        setAttendances(response.data.attendances);
+  const currentPage =  parseInt(params.pageNumber);
+  const itemsPerPage = 7;
+  const navigate = useNavigate();
+  
+  const fetchEmployees = async()=>{
+    try{
+      let response = await api.get(`employees/list?page=${currentPage}&perPage=${itemsPerPage}&keyword=${searchValue}`);
+      
+      if (response.status === 200){
+        setEmployees(response.data.employees);
         setPages(response.data.page_count);
-        console.log(response.data.attendances)
       }
     }
-    fetchData();
-  }, [currentPage, itemsPerPage]);
+    catch(error){
+      
+    }
+  }
+  
+  useEffect(()=>{
+    fetchEmployees();
+  },[currentPage, itemsPerPage, searchValue])
 
   const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-    sessionStorage.setItem('attendance_currentPage', pageNumber);
+    navigate(`/attendances/page/${pageNumber}`);
   };
 
-  const handleViewClick = (attendance) => {
-    navigate(`/attendances/log/${attendance.id}`);
-  };
-
+  const handleViewClick = (employee) =>{
+    navigate(`/attendances/log/${employee.id}`)
+  }
 
 
   const pageNumbers = Array.from({ length: pages }, (_, i) => i + 1);
@@ -50,36 +48,35 @@ function AttendanceTable() {
   const startIndex = (currentPage - 1) * itemsPerPage;
 
   return (
-    <div className='container'>
+    <>
       <Table>
         <thead style={{ backgroundColor: '#2b889b', color: '#ffffff' }}>
           <tr>
             <th>#</th>
             <th>Employee</th>
-            <th>Date</th>
-            <th>Check In</th>
-            <th>Check Out</th>
-            <th>Total Hours</th>
+            <th>Role</th>
+            <th>Position</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          {attendances.map((attendance, index) => (
+          {employees.map((employee, index) => (
             <tr key={index}>
               <td>{startIndex + index + 1}</td>
-              <td>{attendance.employee}</td>
-              <td>{attendance.date}</td>
-              <td>{attendance.check_in}</td>
-              <td>{attendance.check_out}</td>
-              <td>{attendance.working_time}</td>
-              <td><Button className='btn btn-primary' onClick={()=>handleViewClick(attendance)}><FontAwesomeIcon icon={faEye} /> View</Button></td>
+              <td>{employee.name}</td>
+              {employee.is_manager ?
+                <td>Manager</td> :
+                <td>Employee</td>
+              }
+              <td>{employee.designation_name}</td>
+              <td><Button className='btn btn-primary' onClick={()=>handleViewClick(employee)}><FontAwesomeIcon icon={faEye} /> View</Button></td>
             </tr>
           ))}
       </tbody>
       </Table>
 
       <PaginationTag currentPage={currentPage} pageNumbers={pageNumbers} handlePageChange={handlePageChange}/>
-    </div>
+    </>
   )
 }
 

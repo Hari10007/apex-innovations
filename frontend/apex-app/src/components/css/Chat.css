@@ -1,0 +1,12 @@
+@media (max-width: 768px) {
+  .input-emoji {
+    width: calc(100% - 70px);
+    max-width: calc(100% - 70px);
+    margin-right: 10px;
+  }
+  .send-button {
+    margin-left: 10px;
+  }
+  
+}
+

@@ -1,13 +1,19 @@
 import React from 'react'
 import { Box } from '@mui/material';
 import moment from 'moment';
-import { useSelector } from 'react-redux';
-import { selectTotalHours } from '../../../redux-toolkit/attendanceLogSlice';
+import { useEffect } from 'react';
+import { useState } from 'react';
 
-function AttendanceHourBox() {
-    const hours = useSelector(selectTotalHours);
-    const duration = moment.duration(hours, 'seconds');
-    const formattedDuration = moment.utc(duration.asMilliseconds()).format('HH:mm:ss');
+function AttendanceHourBox({hour}) {
+  
+  const [time, setTime] = useState("00:00:00");
+
+  useEffect(()=>{
+    if (hour){
+      const duration = moment.duration(hour, 'seconds');
+      setTime(moment.utc(duration.asMilliseconds()).format('HH:mm:ss'));
+    }
+  }, [hour])
   
   return (
     <>
@@ -29,9 +35,9 @@ function AttendanceHourBox() {
             },
         }}
         >
-           <div className='d-flex flex-column align-items-center my-3'>
+            <div className='d-flex flex-column align-items-center my-3'>
                 <h6>Hours</h6>
-                <p style={{fontSize: '1.5rem'}}> {formattedDuration}</p>
+                <p style={{fontSize: '1.5rem'}}> {time}</p>
             </div>
         </Box>
     </>

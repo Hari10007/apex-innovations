@@ -18,7 +18,7 @@ function ProjectCard({searchValue}) {
   
   const fetchProjects = async ()=>{
     try{
-      const response = await api.get(`api/project/list_projects?page=${currentPage}&perPage=${itemsPerPage}&keyword=${searchValue}`)
+      const response = await api.get(`project/list_projects?page=${currentPage}&perPage=${itemsPerPage}&keyword=${searchValue}`)
 
       if (response.status === 200){
         setProjects(response.data.project)

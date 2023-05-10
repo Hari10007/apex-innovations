@@ -14,7 +14,7 @@ function LeaveRequest() {
 
   const approveLeave = async () => {
     try {
-      const response = await api.post(`api/leave/leave_requests/${params.id}/approve`);
+      const response = await api.post(`leave/leave_requests/${params.id}/approve`);
       if (response.status === 200) {
         setEmployeeLeave((prevEmployeeLeave) => ({
           ...prevEmployeeLeave,
@@ -29,7 +29,7 @@ function LeaveRequest() {
 
   const rejectLeave = async () => {
     try {
-      const response = await api.post(`api/leave/leave_requests/${params.id}/reject`);
+      const response = await api.post(`leave/leave_requests/${params.id}/reject`);
       if (response.status === 200) {
         setEmployeeLeave((prevEmployeeLeave) => ({
           ...prevEmployeeLeave,
@@ -44,7 +44,7 @@ function LeaveRequest() {
 
   const fetchEmployeeLeave = async (id) =>{
     try{
-      const response = await api.get(`api/leave/leave_requests/${id}`);
+      const response = await api.get(`leave/leave_requests/${id}`);
 
       if (response.status === 200){
         setEmployeeLeave(response.data);
