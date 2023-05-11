@@ -30,7 +30,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 INTERNAL_IPS = [
     # ...
@@ -187,35 +187,36 @@ LOGGING = {
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-print(DEBUG)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'apex_innovation',
-        'USER': 'root',
-        'PASSWORD': '5Xh1EI4TsgIpbsCPD1xC',
-        'HOST': 'apex.cdlu3ufsfwza.ap-south-1.rds.amazonaws.com',
-        'PORT': '3306',
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'use_unicode': True,
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'apex_innovation',
+            'USER': 'root',
+            'PASSWORD': 'Harix123#',
+            'HOST': 'localhost',
+            'PORT': '3306',
+            'OPTIONS': {
+                        'charset': 'utf8mb4',
+                        'use_unicode': True, 
+            }
+        },     
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'apex_innovation',
+            'USER': 'root',
+            'PASSWORD': '5Xh1EI4TsgIpbsCPD1xC',
+            'HOST': 'apex.cdlu3ufsfwza.ap-south-1.rds.amazonaws.com',
+            'PORT': '3306',
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+                'use_unicode': True,
+            },
         },
-    },
-}
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.mysql',
-    #         'NAME': 'apex_innovation',
-    #         'USER': 'root',
-    #         'PASSWORD': '5Xh1EI4TsgIpbsCPD1xC',
-    #         'HOST': 'apex.cdlu3ufsfwza.ap-south-1.rds.amazonaws.com',
-    #         'PORT': '3306',
-    #         'OPTIONS': {
-    #             'charset': 'utf8mb4',
-    #             'use_unicode': True,
-    #         },
-    #     },
-    # }
+    }
 
 
 # Password validation
@@ -235,8 +236,10 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
-CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
+else:
+    CSRF_TRUSTED_ORIGINS = ['https://apexinnovation.netlify.app/']
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
