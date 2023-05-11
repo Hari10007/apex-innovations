@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 import chat.routing
 import notification.routing
+from django.views.static import serve
+from django.conf import settings
 
 urlpatterns = [
     re_path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
