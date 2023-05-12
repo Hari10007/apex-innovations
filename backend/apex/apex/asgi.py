@@ -16,6 +16,9 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'apex.settings')
 
+import django
+django.setup()
+
 import chat.routing
 import notification.routing
 
