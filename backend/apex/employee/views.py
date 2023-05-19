@@ -1,17 +1,17 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import serializers
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import AuthenticationFailed
-from .serializers import EmployeeSerializer, EmployeeDetailSerializer, ChangePasswordSerializer
+from rest_framework.exceptions import AuthenticationFailed, APIException
+from .serializers import EmployeeSerializer, EmployeeDetailSerializer, ChangePasswordSerializer, DesignationSerializer, EmployeeUpdateSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import Employee
+from .models import Employee, Designation
 from rest_framework import status
 from django.contrib.auth import authenticate
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from chat.serializers import EmployeeChatSerializer
-
 # Create your views here.
 
 class RefreshTokenView(APIView):
@@ -155,3 +155,131 @@ class CheckEmployee(APIView):
         else:
             serializer = EmployeeChatSerializer(employee)
             return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ListManagers(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request):
+        current_user = request.user
+
+        employee = Employee.objects.filter(is_manager= True).order_by('-date_joined')
+        serializer = EmployeeDetailSerializer(employee, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ListDesignations(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request):
+        current_user = request.user
+
+        designations = Designation.objects.all()
+        serializer = DesignationSerializer(designations, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class CreateDesignation(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def post(self, request):
+        current_user = request.user
+
+        name = request.data.get('name')
+        designation = Designation.objects.create(name = name)
+        return Response({'message': 'Designation Created Successfully', "status":'success'})
+
+
+class CreateEmployee(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def post(self, request):
+        current_user = request.user
+
+        email = request.data.get('email')
+        if Employee.objects.filter(email=email).exists():
+            return Response({'error': 'Email is already in use', 'status': 'danger'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            serializer = EmployeeSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except serializers.ValidationError as e:
+            return Response({'error': str(e), 'status': 'danger'}, status=status.HTTP_400_BAD_REQUEST)
+        except APIException as e:
+            return Response({'error': str(e.detail), 'status': 'danger'}, status=e.status_code)
+
+class EmployeeDetails(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self, request, employeeId):
+        current_user = request.user
+
+        employee_id = int(employeeId)
+        employee= Employee.objects.get(id = employee_id)
+
+        serializer = EmployeeUpdateSerializer(employee)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class UpdateEmployee(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def post(self, request, employeeId):
+        current_user = request.user
+        employee_id = int(employeeId)
+        employee = Employee.objects.get(id = employee_id)
+
+        employee.image = request.FILES.get('image',  employee.image)
+        employee.first_name = request.data.get('first_name', employee.first_name)
+        employee.last_name = request.data.get('last_name', employee.last_name)
+        employee.email = request.data.get('email', employee.email)
+        employee.phone = request.data.get('phone', employee.phone)
+
+        designation_id = request.data.get('designation_id')
+        if designation_id:
+            try:
+                designation = Designation.objects.get(id=int(designation_id))
+                employee.designation = designation
+            except Designation.DoesNotExist:
+                return Response({'error': 'Invalid designation', 'status': 'danger'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        manager_id = request.data.get('manager_id')
+        if manager_id:
+            try:
+                manager = Employee.objects.get(id=int(manager_id))
+                employee.parent = manager
+            except Employee.DoesNotExist:
+                return Response({'error': 'Invalid Manager', 'status': 'danger'}, status=status.HTTP_400_BAD_REQUEST)
+
+        employee.city = request.data.get('city', employee.city)
+        employee.state = request.data.get('state', employee.state)
+        employee.date_joined = request.data.get('date_joined', employee.date_joined)
+        employee.salary = request.data.get('salary', employee.salary)
+        employee.qualification = request.data.get('qualification', employee.qualification)
+
+
+        employee.save()
+
+        return Response({'message': 'Employee Updated Successfully', "status":'success'})
+
+class TotalEmployees(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request):
+        admin_count = Employee.objects.filter(is_staff=True, is_active = True).count()
+
+        manager_count = Employee.objects.filter(is_staff=False, is_manager=True).count()
+
+        hr_manager_count = Employee.objects.filter(is_staff=False, is_hr_manager=True, is_manager=True).count()
+
+        other_employees_count = Employee.objects.exclude(
+            Q(is_staff=True) | Q(is_manager=True) | Q(is_hr_manager=True)
+        ).count()
+
+        response_data = {
+            'admins_count': admin_count,
+            'managers_count': manager_count,
+            'hr_managers_count': hr_manager_count,
+            'employees_count': other_employees_count
+        }
+
+        return Response(response_data)

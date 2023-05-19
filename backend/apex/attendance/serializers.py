@@ -8,7 +8,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Attendance
-        fields = ['id', 'date', 'check_in', 'check_out', 'working_time', 'employee']
+        fields = ['id', 'date', 'check_in', 'check_out', 'working_time', 'employee', 'status']
     
     def get_employee(self, obj):
         return f"{obj.employee.first_name} {obj.employee.last_name}"

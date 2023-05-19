@@ -155,7 +155,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("localhost", 6379)],
+            "hosts": [("127.0.0.1", 6379)],
             # "hosts": [("redis://default:88ks3di5AYknRoGfybPvMbe5bO695ybd@redis-14200.c81.us-east-1-2.ec2.cloud.redislabs.com:14200")]
         },
     },
@@ -188,19 +188,19 @@ LOGGING = {
 #     }
 # }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'apex_innovation',
-        'USER': 'root',
-        'PASSWORD': '5Xh1EI4TsgIpbsCPD1xC',
-        'HOST': 'apex.cdlu3ufsfwza.ap-south-1.rds.amazonaws.com',
-        'PORT': '3306',
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'use_unicode': True,
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'apex_innovation',
+            'USER': 'root',
+            'PASSWORD': '5Xh1EI4TsgIpbsCPD1xC',
+            'HOST': 'apex.cdlu3ufsfwza.ap-south-1.rds.amazonaws.com',
+            'PORT': '3306',
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+                'use_unicode': True,
+            },
         },
-    },
-}
+    }
 
 
 # Password validation
@@ -223,7 +223,7 @@ AUTH_PASSWORD_VALIDATORS = [
 if DEBUG:
     CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
 else:
-    CSRF_TRUSTED_ORIGINS = ['https://apexinnovation.netlify.app/']
+    CSRF_TRUSTED_ORIGINS = ['https://apexinnovation.netlify.app']
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/

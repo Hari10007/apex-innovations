@@ -11,7 +11,6 @@ urlpatterns = [
     path('employee_projects', EmployeeProjects.as_view()),
     path('<projectId>', ProjectDetails.as_view()),
     path('update/<projectId>', UpdateProject.as_view()),
-
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

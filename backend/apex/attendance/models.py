@@ -9,6 +9,14 @@ class Attendance(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="attendances")
     date = models.DateField()
     working_time = models.DurationField(null=True, blank=True)
+    is_requested = models.BooleanField(default=False)
+    status_choices = (
+        ('approved', 'Approved'),
+        ('pending', 'Pending'),
+        ('rejected', 'Rejected'),
+    )
+    status = models.CharField(max_length=20, choices=status_choices, default='approved')
+
 
     def update_working_time(self):
         check_ins = self.check_in_outs.filter(is_check_in=True).order_by('time')

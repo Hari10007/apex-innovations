@@ -11,6 +11,7 @@ class EmployeeSalary(models.Model):
     total_salary = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.BooleanField(default=False)
     salary_date = models.DateField(default=timezone.now)
+    payslip_request = models.BooleanField(default=False)
 
 class EmployeeSalarySlip(models.Model):
     employee_salary = models.OneToOneField(EmployeeSalary, on_delete=models.CASCADE, related_name="salary_slip")
