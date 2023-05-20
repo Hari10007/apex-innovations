@@ -5,6 +5,7 @@ from .serializers import HolidaySerializer
 from .models import Holiday
 from django.db.utils import IntegrityError
 from django.db.models.functions import ExtractYear, ExtractMonth
+from datetime import datetime, date
 # Create your views here.
 
 
@@ -30,7 +31,17 @@ class CreateHoliday(APIView):
         admin = request.user
 
         name = request.data.get('name')
-        date = request.data.get('date')
+        date_str = request.data.get('date')
+
+        try:
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+        except ValueError:
+            return Response({'message': 'Invalid date format. Please provide the date in YYYY-MM-DD format.', 'status': 'danger'})
+
+        current_year = date.today().year
+
+        if date_obj.year  != current_year:
+            return Response({'message': 'Invalid year. The holiday year must be the current year', 'status': 'danger'})
 
         try:
             holiday = Holiday.objects.create(name=name, date=date)

@@ -100,7 +100,7 @@ class ListProjects(APIView):
         page_number = request.GET.get('page', 1)
         items_per_page = request.GET.get('perPage', 6)
 
-        if employee.is_admin:
+        if employee.is_hr_manager:
             if keyword and keyword.strip() != '':
                 projects = Project.objects.filter(Q(title__icontains=keyword) | Q(description__icontains=keyword)).order_by('-date_modified')[:6]
             else:

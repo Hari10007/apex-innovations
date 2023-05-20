@@ -61,6 +61,7 @@ class LoginView(APIView):
         token['image'] = employee.image and employee.image.url  or ""
         token['manager'] = employee.is_manager
         token['admin'] = employee.is_staff
+        token['hr_manager'] = employee.is_hr_manager
 
         response_data = {
             'refresh': str(token),
