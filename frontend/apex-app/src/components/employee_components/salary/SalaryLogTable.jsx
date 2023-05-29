@@ -3,16 +3,17 @@ import { useEffect } from 'react';
 import { useState } from 'react'
 import { Button, Table } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMoneyCheckDollar , faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import useAxios from '../../../utilis/useAxios';
 import { useNavigate, useParams } from 'react-router-dom';
 import PaginationTag from '../../pagination/PaginationTag';
 import moment from 'moment';
-import SalarySlipModal from './SalarySlipModal';
-import { useSelector } from 'react-redux';
-import { selectedValue } from '../../../redux-toolkit/componentUpdateSlice';
+import { useDispatch } from 'react-redux';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import SalarySlipPdf from './SalarySlipPdf';
+import { setMessage } from '../../../redux-toolkit/messageSlice';
 
-function SalaryLog({date}) {
+function SalaryLogTable({date}) {
     const params = useParams();
     const [employee_salaries, setEmployeeSalaries] = useState([]);
     const [pages, setPages] = useState();
@@ -20,18 +21,14 @@ function SalaryLog({date}) {
     const currentPage =  parseInt(params.pageNumber);
     const itemsPerPage = 7;
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [paySlipRequest, setPaySlipRequest] = useState(false);
     const [employee_salary, setEmployeeSalary] = useState([])
-    const [modalShow, setModalShow] = useState(false);
-    const salarySlipUpdated = useSelector(selectedValue);
-    // const [salarySlipUpdated, setSalarySlipUpdated] = useState(false);
 
-    // const handle_salary = () => {
-    //     setSalarySlipUpdated(!salarySlipUpdated);
-    // };
 
     const fetchSalaryLog = async()=>{
         try{
-          let response = await api.get(`salary/list?employee=${params?.id}&page=${currentPage}&perPage=${itemsPerPage}&date=${date}`);
+          let response = await api.get(`salary/list?&page=${currentPage}&perPage=${itemsPerPage}&date=${date}`);
 
           if (response.status === 200){
               setEmployeeSalaries(response.data.employee_salaries);
@@ -45,18 +42,29 @@ function SalaryLog({date}) {
 
     useEffect(()=>{
         fetchSalaryLog();
-    },[currentPage, itemsPerPage, date, salarySlipUpdated])
+    },[currentPage, itemsPerPage, date, paySlipRequest])
 
     const handlePageChange = (pageNumber) => {
-        navigate(`/salary/log/${params?.id}/page/${pageNumber}`);
+        navigate(`/salary/page/${pageNumber}`);
     };
 
-    let handleSalary = (employee_salary)=>{
-        setEmployeeSalary(employee_salary)
-        setModalShow(true)
+    let handleRequest = async(employee_salary)=>{
+        try{
+            let response = await api.post('salary/payslip_request',{
+              employee_salary: employee_salary.id
+            });
+  
+            if (response.data){
+                dispatch(setMessage({ message: response.data.message, type: response.data.status }));
+                setPaySlipRequest(!paySlipRequest)
+            }
+          }
+          catch(error){
+  
+          }
     }
 
-
+    console.log(employee_salaries)
     const pageNumbers = Array.from({ length: pages }, (_, i) => i + 1);
 
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -69,7 +77,6 @@ function SalaryLog({date}) {
             <th>#</th>
             <th>Date</th>
             <th>Salary Slip</th>
-            <th>Payslip Request</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -84,26 +91,34 @@ function SalaryLog({date}) {
                     :
                     <td><span className="badge rounded-pill p-2 bg-danger">Not Generated</span></td>
               }
-              {employee_salary.payslip_request ? (
+              {employee_salary.salary_slip?
+                <td>
+                    <PDFDownloadLink document={<SalarySlipPdf />} filename="FORM">
+                        <Button className='btn btn-primary'  style={{ flex: 1, minWidth: '150px', marginRight: '5px' }}><FontAwesomeIcon icon={faDownload} /> Download</Button>
+                    </PDFDownloadLink>
+                </td>
+                :employee_salary.payslip_request ? (
                   <td>
-                    <span className="badge rounded-pill p-2 bg-success"><FontAwesomeIcon icon={faCheck} /></span>
+                    <span className="badge rounded-pill p-2 bg-success">Requested</span>
                   </td>
                 ) : (
                   <td>
-                    
+                    <Button className="btn btn-primary" style={{ flex: 1, minWidth: '150px', marginRight: '5px' }} onClick={() => handleRequest(employee_salary)}>
+                      Request
+                    </Button>
                   </td>
-                )}
-              <td><Button className='btn btn-primary'  onClick={() => handleSalary(employee_salary)}><FontAwesomeIcon icon={faMoneyCheckDollar} /> Generate Slip</Button></td>
+                )
+                }
+               
             </tr>
           ))}
          
         </tbody>
       </Table>
+      <PaginationTag currentPage={currentPage} pageNumbers={pageNumbers} handlePageChange={handlePageChange}/>
         
-       <SalarySlipModal  employee_salary={employee_salary} show={modalShow} onHide={() => setModalShow(false)}/>
-       <PaginationTag currentPage={currentPage} pageNumbers={pageNumbers} handlePageChange={handlePageChange}/>
     </>
   )
 }
 
-export default SalaryLog
+export default SalaryLogTable

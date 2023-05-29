@@ -3,6 +3,7 @@ import TimeLine from '../../../components/admin_components/attendance_log/TimeLi
 import AttendanceHourBox from '../../../components/admin_components/attendance_log/AttendanceHourBox'
 import AttendanceDate from '../../../components/admin_components/attendance_log/AttendanceDate'
 import { useState } from 'react'
+import AttendanceRequestTable from '../../../components/admin_components/attendance_log/AttendanceRequestTable'
 
 function AttendanceTimeLine() {
   const [date, setDate] = useState();
@@ -10,6 +11,7 @@ function AttendanceTimeLine() {
 
   return (
     <>
+        <AttendanceRequestTable />
         <div className='d-flex justify-content-center my-4'>
             <div className='row'>
               <div className='col-md-5'>
@@ -19,7 +21,6 @@ function AttendanceTimeLine() {
                 <AttendanceHourBox hour={hour} />
               </div>
             </div>
-            
             
         </div>
         <TimeLine date={date} setTotalHour={setTotalHour} />

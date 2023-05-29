@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import useAxios from '../../../utilis/useAxios';
 import { useParams } from 'react-router-dom';
 import { setMessage } from '../../../redux-toolkit/messageSlice';
+import { baseURL } from '../../../utilis/baseUrl';
 
 function ProjectUpdateForm() {
     const dispatch = useDispatch();
@@ -129,7 +130,7 @@ function ProjectUpdateForm() {
 
                     <div className='col-9'>
                         {formik.values.Image && (
-                            <img  id="previewImage" src={`http://localhost:8000/api${formik.values.Image}`} className="img-thumbnail img-fluid" alt="Project" />
+                            <img  id="previewImage" src={`${baseURL + formik.values.Image}`} className="img-thumbnail img-fluid" alt="Project" />
                         )}
                         <input
                             accept="image/*"

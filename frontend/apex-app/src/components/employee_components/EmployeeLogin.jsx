@@ -4,7 +4,7 @@ import jwt from 'jwt-decode'
 import {useDispatch} from 'react-redux'
 import Cookies from 'js-cookie';
 import { login } from '../../redux-toolkit/userSlice'
-
+import { baseURL } from '../../utilis/baseUrl';
 
 function EmployeeLogin() {
   const [email, setEmail] = useState('');
@@ -15,7 +15,7 @@ function EmployeeLogin() {
   const submit = async (e) => {
       e.preventDefault();
 
-      const response =  await fetch('http://localhost:8000/api/login', 
+      const response =  await fetch(`${baseURL}/login`, 
       {
           method: 'POST',
           credentials: 'include',
@@ -47,7 +47,7 @@ function EmployeeLogin() {
   return (
       <main className="form-sign-in w-100 m-auto">
         <form onSubmit={submit}>
-          <h1 className="h3 mb-3 fw-normal">Employee Login</h1>
+          <h1 className="h3 mb-3 fw-normal">Login</h1>
           <p className='text-danger'>{message}</p>
           <div className="form-floating">
             <input type="email" className="form-control" onChange={e => setEmail(e.target.value)}/>

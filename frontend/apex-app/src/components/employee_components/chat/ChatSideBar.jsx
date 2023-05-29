@@ -9,6 +9,7 @@ import {
   } from "mdb-react-ui-kit";
 import { NavLink, useNavigate} from "react-router-dom";
 import useAxios from '../../../utilis/useAxios';
+import { baseURL } from '../../../utilis/baseUrl';
 
 function ChatSideBar() {
   const api = useAxios();
@@ -67,7 +68,7 @@ function ChatSideBar() {
                   <NavLink style={{textDecoration: 'none'}}  className="d-flex justify-content-between">
                     <div className="d-flex flex-row">
                       <img
-                        src={`${employee.image ? "http://localhost:8000/api" + employee.image : "https://bootdey.com/img/Content/avatar/avatar7.png"}`}
+                        src={`${employee.image ? baseURL + employee.image : "https://bootdey.com/img/Content/avatar/avatar7.png"}`}
                         alt="avatar"
                         className="rounded-circle d-flex align-self-center me-3 shadow-1-strong"
                         width="60"

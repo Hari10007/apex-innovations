@@ -3,7 +3,7 @@ import SalaryTable from '../../../components/admin_components/salary/SalaryTable
 import { useState } from 'react';
 
 
-function EmployeeSalary() {
+function EmployeesSalary() {
 
     const [searchValue, setSearchValue] = useState('');
 
@@ -21,4 +21,4 @@ function EmployeeSalary() {
     )
 }
 
-export default EmployeeSalary
+export default EmployeesSalary

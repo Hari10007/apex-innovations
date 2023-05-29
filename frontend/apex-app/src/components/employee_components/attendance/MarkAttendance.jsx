@@ -48,6 +48,7 @@ function MarkAttendance({handleAttendanceUpdate, selectedDate}) {
     try {
       const now = new Date();
       const currentTime = now.toLocaleTimeString('en-US', { hour12: false });
+      console.log(currentTime)
 
       const currentDate = moment(now).format('YYYY-MM-DD');
   

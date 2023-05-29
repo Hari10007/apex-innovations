@@ -6,13 +6,14 @@ import { Badge, Button} from 'react-bootstrap';
 import UpdatePassword from './UpdatePassword';
 import { useDispatch } from 'react-redux';
 import { updateUserDetails } from '../../../redux-toolkit/userSlice';
+import { baseURL } from '../../../utilis/baseUrl';
 
 
 function EmployeeDetail({ profileUpdated }) {
   
   const [modalShow, setModalShow] = useState(false);
   const [employee, setEmployee] = useState([]);
-  const imageURL = employee.image ? "http://localhost:8000/api" + employee.image : "https://bootdey.com/img/Content/avatar/avatar7.png";
+  const imageURL = employee.image ? baseURL + employee.image : "https://bootdey.com/img/Content/avatar/avatar7.png";
   const api = useAxios();
   const dispatch = useDispatch();
 
@@ -62,8 +63,7 @@ function EmployeeDetail({ profileUpdated }) {
                     </div>
                   </>
                 : null}
-              </div>
-                    
+              </div>    
             </div>
         </div>
         <hr/>

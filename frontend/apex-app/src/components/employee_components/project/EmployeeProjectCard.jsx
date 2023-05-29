@@ -4,6 +4,7 @@ import PaginationTag from '../../pagination/PaginationTag';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useParams } from 'react-router-dom';
+import { baseURL } from '../../../utilis/baseUrl';
 
 function EmployeeProjectCard({searchValue}) {
   const[projects, setProjects] = useState([]);
@@ -49,7 +50,7 @@ function EmployeeProjectCard({searchValue}) {
           {projects.map((project, index) => (
             <div className="col-md-6 col-lg-4" key={index} style={{ cursor: 'pointer' }}>
               <div className="card border-info text-center h-100">
-                <img src={project.image ? `http://localhost:8000/api${project.image}` : ''} className="card-img-top img-fluid" alt="Project" />
+                <img src={project.image ? `${baseURL + project.image}` : ''} className="card-img-top img-fluid" alt="Project" />
                 <div className="card-body">
                   <h5 className="card-title">{project.title}</h5>
                   <p className="card-text">{project.description}</p>

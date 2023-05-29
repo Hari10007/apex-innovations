@@ -30,10 +30,10 @@ function TimeLine({date, setTotalHour}) {
                 if (response.status === 200) {
                     if (response.data.message){
                         setAttendanceLog([]);
+                        setTotalHour("00:00:00");
                     }else{
                         setAttendanceLog(response.data.log);
                         setTotalHour(response.data.total_hours)
-                        console.log(response.data.total_hours)
                     }
                 }
             } catch (error) {
@@ -43,7 +43,7 @@ function TimeLine({date, setTotalHour}) {
     
         fetchData();
     }, [date]);
-    
+
   return (
     <>
         <Timeline position="alternate">

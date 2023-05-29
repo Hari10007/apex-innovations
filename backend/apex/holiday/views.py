@@ -44,11 +44,15 @@ class CreateHoliday(APIView):
             return Response({'message': 'Invalid year. The holiday year must be the current year', 'status': 'danger'})
 
         try:
-            holiday = Holiday.objects.create(name=name, date=date)
-        except IntegrityError:
-            return Response({'message': 'Holiday with the same name and date already exists', 'status': 'danger'})
-
-        return Response({'message': 'New Holiday Added', 'status': 'success'})
+            holiday = Holiday.objects.get(name=name, date__year=current_year)
+            return Response({'message': f'Holiday with the same name already exists for the year {current_year}', 'status': 'danger'})
+        except Holiday.DoesNotExist:
+            is_weekend = date_obj.weekday() >= 5
+            if is_weekend:
+                return Response({'message': 'Invalid date. Holidays cannot be on weekends', 'status': 'danger'})
+            
+            holiday = Holiday.objects.create(name=name, date=date_obj)
+            return Response({'message': 'New Holiday Added', 'status': 'success'})
 
 class UpdateHoliday(APIView):
     permission_classes = (IsAuthenticated, )

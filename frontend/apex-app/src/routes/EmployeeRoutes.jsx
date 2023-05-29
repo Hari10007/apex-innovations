@@ -23,10 +23,9 @@ import AdminDashboardPage from '../pages/admin/AdminDashboard'
 import AttendanceLog from '../pages/admin/attendance/AttendanceLog'
 import AttendanceTimeLine from '../pages/admin/attendance/AttendanceTimeLine'
 import AdminAttendancePage from '../pages/admin/attendance/Attendance'
-import EmployeeSalary from '../pages/admin/salary/EmployeeSalary'
+import EmployeesSalary from '../pages/admin/salary/EmployeesSalary'
 import AttendanceList from '../pages/employee/attendance/AttendanceList'
 import SalaryDetails from '../pages/admin/salary/SalaryDetails'
-import EmployeeSalaryLog from '../pages/admin/salary/EmployeeSalaryLog'
 import ChatPage from '../pages/employee/chat/ChatPage'
 import ChatList from '../pages/employee/chat/ChatList'
 import ChatDetail from '../pages/employee/chat/ChatDetail'
@@ -34,14 +33,19 @@ import EmployeesPage from '../pages/admin/employees/Employees'
 import EmployeeListPage from '../pages/admin/employees/EmployeeList'
 import EmployeeUpdatePage from '../pages/admin/employees/EmployeeUpdate'
 import EmployeeCreatePage from '../pages/admin/employees/EmployeeCreate'
+import EmployeeSalary from '../pages/employee/salary/EmployeeSalary'
+import EmployeesSalaryLog from '../pages/admin/salary/EmployeesSalaryLog'
+import EmployeeSalaryLog from '../pages/employee/salary/EmployeeSalaryLog'
+import AttendanceDetail from '../pages/admin/attendance/AttendanceDetail'
 
 function LoginRoute() {
     const employee = useSelector(selectUser);
 
-    if (employee?.manager) {
-      return <Navigate to="/dashboard" />;
-    }
-    else if (employee?.admin) {
+    // if (employee?.manager) {
+    //   return <Navigate to="/dashboard" />;
+    // }
+    // else 
+    if (employee?.admin) {
       return <Navigate to="/admin_dashboard" />;
     } 
     else if (employee) {
@@ -57,7 +61,7 @@ function EmployeeRoutes() {
     return (
       <>
         <Routes>
-            <Route path="/" exact element={<LoginRoute />} />
+            <Route path="/" exact element={<Navigate to="/login" replace />} />
 
             <Route path="/login" exact element={<LoginRoute />} />
             <Route element={<ProtectedRoute  logoutPath="/login"/>}>
@@ -77,6 +81,11 @@ function EmployeeRoutes() {
                         <Route path="create_project" element={<CreateProject/>} />
                         <Route path=":projectId" element={<ProjectDetails />} />
                       </Route>
+
+                      <Route path="salary" element={<EmployeeSalary/>} >
+                        <Route index element={<Navigate to="page/1" replace />} />
+                        <Route path="page/:pageNumber" element={<EmployeeSalaryLog/>} />
+                      </Route>
                     </>
                   }
 
@@ -88,9 +97,9 @@ function EmployeeRoutes() {
                         <Route path=":id" element={<ChatDetail/>} />
                   </Route>
 
-                  {employee?.manager && 
+                  {employee?.manager  && !employee.hr_manager && 
                     <>
-                      <Route path="dashboard" element={<DashboardPage />} />
+                      {/* <Route path="dashboard" element={<DashboardPage />} /> */}
                       <Route path="leave_management" element={<LeaveManagementPage />}>
                         <Route index element={<Navigate to="leave_requests" replace />} />
                         <Route path="leave_requests" element={<LeaveRequestList/>} />
@@ -105,20 +114,23 @@ function EmployeeRoutes() {
                       <Route path="employees" element={<EmployeesPage/>} >
                         <Route index element={<Navigate to="page/1" replace />} />
                         <Route path="page/:pageNumber" element={<EmployeeListPage/>} />
-                        <Route path="update/:id" element={<EmployeeUpdatePage/>} />
+                        <Route path="update/:employeeId" element={<EmployeeUpdatePage/>} />
                         <Route path="create" element={<EmployeeCreatePage/>} />
                       </Route>
                       <Route path="attendances" element={<AdminAttendancePage/>} >
                         <Route index element={<Navigate to="page/1" replace />} />
                         <Route path="page/:pageNumber" element={<AttendanceLog/>} />
-                        <Route path="log/:id" element={<AttendanceTimeLine/>} />
+                        <Route path="log/:id" element={<AttendanceDetail/>} >
+                          <Route index element={<Navigate to="page/1" replace />} />
+                          <Route path="page/:pageNumber" element={<AttendanceTimeLine/>} />
+                        </Route>
                       </Route>
                       <Route path="salary" element={<Salary/>} >
                         <Route index element={<Navigate to="page/1" replace />} />
-                        <Route path="page/:pageNumber" element={<EmployeeSalary/>} />
+                        <Route path="page/:pageNumber" element={<EmployeesSalary/>} />
                         <Route path="log/:id" element={<SalaryDetails/>} >
                           <Route index element={<Navigate to="page/1" replace />} />
-                          <Route path="page/:pageNumber" element={<EmployeeSalaryLog/>} />
+                          <Route path="page/:pageNumber" element={<EmployeesSalaryLog/>} />
                         </Route>
                       </Route>
                     </>

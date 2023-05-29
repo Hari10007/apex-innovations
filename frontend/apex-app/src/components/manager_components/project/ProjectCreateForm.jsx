@@ -8,6 +8,7 @@ import { setMessage } from '../../../redux-toolkit/messageSlice';
 import { Autocomplete, Button, FormControl, MenuItem, Select, TextField } from '@mui/material';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { baseURL } from '../../../utilis/baseUrl';
 
 
 function ProjectCreateForm() {
@@ -108,7 +109,7 @@ function ProjectCreateForm() {
 
                     <div className='col-9'>
                         {formik.values.Image && (
-                            <img  id="previewImage" src={`http://localhost:8000/api${formik.values.Image}`} className="img-thumbnail img-fluid" alt="Project" />
+                            <img  id="previewImage" src={`${baseURL + formik.values.Image}`} className="img-thumbnail img-fluid" alt="Project" />
                         )}
                         <input
                             accept="image/*"

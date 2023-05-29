@@ -14,6 +14,17 @@ from django.core.exceptions import ObjectDoesNotExist
 from chat.serializers import EmployeeChatSerializer
 # Create your views here.
 
+
+class CheckConnectionView(APIView):
+    def get(self, request):
+        try:
+            from django.db import connection
+            connection.cursor()
+        except Exception as e:
+            return Response({'message': 'Backend is down', 'status': 'danger'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        return Response({'message': 'Backend is up', 'status': 'success'}, status=status.HTTP_200_OK)
+
 class RefreshTokenView(APIView):
     def post(self, request):
         refresh_token = request.data.get('refresh')

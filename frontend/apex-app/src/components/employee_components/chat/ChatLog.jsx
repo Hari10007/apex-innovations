@@ -18,6 +18,7 @@ import moment from 'moment';
 import { Button } from '@material-ui/core';
 import InputEmoji from "react-input-emoji";
 import "../../css/Chat.css"
+import { baseURL, socketUrl } from '../../../utilis/baseUrl';
 
 function ChatLog() {
     const params = useParams();
@@ -67,7 +68,7 @@ function ChatLog() {
         if (employeeExists) {
             const room_name = `chat_${Math.min(employee1?.id, employee2)}_${Math.max(employee1?.id, employee2)}`;
 
-            const new_socket = new WebSocket(`ws://localhost:8000/ws/chat/${room_name}/`);
+            const new_socket = new WebSocket(`${socketUrl}/ws/chat/${room_name}/`);
             setRoomName(room_name);
         
             new_socket.onopen = () => {
@@ -135,7 +136,7 @@ function ChatLog() {
                             onClick={() => navigate('/chat')}
                             style={{ fontSize: "24px", marginRight: "10px", marginLeft: "10px", cursor: "pointer" }}/>
                         <img
-                            src={`${receiverEmployee?.image ? "http://localhost:8000/api" + receiverEmployee?.image : "https://bootdey.com/img/Content/avatar/avatar7.png"}`}
+                            src={`${receiverEmployee?.image ? baseURL + receiverEmployee?.image : "https://bootdey.com/img/Content/avatar/avatar7.png"}`}
                             alt="avatar"
                             className="rounded-circle d-flex align-self-start me-3 shadow-1-strong"
                             width="60"

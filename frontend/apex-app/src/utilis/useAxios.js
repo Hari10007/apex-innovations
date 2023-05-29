@@ -5,8 +5,8 @@ import { useDispatch } from 'react-redux';
 import { logout, updateUser } from '../redux-toolkit/userSlice';
 import Cookies from 'js-cookie';
 import { startNotificationLoader, startPageLoader, stopNotificationLoader, stopPageLoader } from '../redux-toolkit/loaderSlice';
+import { baseURL } from './baseUrl';
 
-const baseURL = 'http://localhost:8000/api/'
 
 const useAxios = () => {
     const dispatch = useDispatch('')
@@ -35,7 +35,7 @@ const useAxios = () => {
         
 
         if (access_token === null) {
-            const response = await axios.post(`${baseURL}refresh-token/`, {
+            const response = await axios.post(`${baseURL}/refresh-token/`, {
                 refresh: refresh_token
             });
 

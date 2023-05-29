@@ -5,7 +5,7 @@ import { persistReducer } from 'redux-persist';
 import messageSlice from './messageSlice';
 import loaderSlice from './loaderSlice';
 import attendanceLogSlice from './attendanceLogSlice';
-import adminSalarySlice from './adminSalarySlice';
+import componentUpdateSlice from './componentUpdateSlice';
 
 const persistConfig = {
     key: "root",
@@ -18,7 +18,7 @@ const reducer = combineReducers({
     message: messageSlice,
     loader: loaderSlice,
     attendance_log: attendanceLogSlice,
-    admin_salary: adminSalarySlice,
+    component_update: componentUpdateSlice,
 })
 
 const persistedReducer = persistReducer(persistConfig, reducer)

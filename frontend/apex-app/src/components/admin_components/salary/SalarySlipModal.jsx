@@ -5,6 +5,7 @@ import moment from 'moment';
 import useAxios from '../../../utilis/useAxios';
 import { setMessage } from '../../../redux-toolkit/messageSlice';
 import { useDispatch } from 'react-redux';
+import { toggleValue } from '../../../redux-toolkit/componentUpdateSlice';
 
 function SalarySlipModal(props) {
     const api = useAxios();
@@ -19,11 +20,10 @@ function SalarySlipModal(props) {
                 'date': moment(new Date()).format('YYYY-MM-DD')
             })
             
-            console.log(response.data)
             if (response.data){
                 props.onHide();
                 dispatch(setMessage({ message: response.data.message, type: response.data.status }));
-                props.handle_salary();
+                dispatch(toggleValue())
             }
         }catch (error) {
             console.error(error);

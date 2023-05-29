@@ -1,33 +1,38 @@
 import React from 'react'
 import { useState } from 'react';
 import useAxios from '../../../utilis/useAxios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Badge } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import PaginationTag from '../../pagination/PaginationTag';
+import { baseURL } from '../../../utilis/baseUrl';
 
 function AllProjectCard({searchValue}) {
     const[projects, setProjects] = useState([]);
     const api = useAxios();
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(6);
     const navigate = useNavigate();
+
+    const params = useParams();
+    const itemsPerPage = 6;
+    const [pages, setPages] = useState();
+    const currentPage = parseInt(params.pageNumber);
 
     const fetchProjects = async ()=>{
       try{
         const response = await api.get(`project/list_projects?page=${currentPage}&perPage=${itemsPerPage}&keyword=${searchValue}`)
   
         if (response.status === 200){
-          setProjects(response.data)
+          setProjects(response.data.project)
+          setPages(response.data.page_count)
         }
       }
       catch(error){
-  
+        console.log(error)
       }
     }
-  
+    
     const handleViewClick = (project) => {
       navigate(`/project/${project.id}`);
     };
@@ -37,23 +42,19 @@ function AllProjectCard({searchValue}) {
     },[currentPage, itemsPerPage, searchValue])
   
     const handlePageChange = (pageNumber) => {
-      setCurrentPage(pageNumber);
+      navigate(`/project/page/${pageNumber}`);
     };
   
-    const pages = Math.ceil(projects.length / itemsPerPage);
+    //convert pages to array for pagination
     const pageNumbers = Array.from({ length: pages }, (_, i) => i + 1);
-  
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentItems = projects.slice(startIndex, endIndex);
   return (
     <>
         <div className="my-5 d-flex justify-content-between align-items-center">
             <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-5">
-            {currentItems.map((project, index) => (
+            {projects.map((project, index) => (
                 <div className="col-md-6 col-lg-4" key={index} onClick={() => handleViewClick(project)} style={{ cursor: 'pointer' }}>
                     <div className="card border-info h-100">
-                        <img src={project.image ? `http://localhost:8000/api${project.image}` : ''} className="card-img-top img-fluid" alt="Project" />
+                        <img src={project.image ? `${baseURL + project.image}` : ''} className="card-img-top img-fluid" alt="Project" />
                         <div className="card-body">
                             <h5 className="card-title">{project.title}</h5>
                             <p className="card-text">{project.description}</p>

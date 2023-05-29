@@ -10,6 +10,7 @@ import { Notifications } from '@material-ui/icons';
 import { Divider, Tooltip } from '@mui/material';
 import moment from 'moment';
 import { selectUser } from '../../redux-toolkit/userSlice';
+import { socketUrl } from '../../utilis/baseUrl';
 
 function Notification() {
   const employee = useSelector(selectUser);
@@ -44,7 +45,7 @@ function Notification() {
   }
 
   const connectWebsocket = () => {
-    const socket = new WebSocket(`ws://localhost:8000/ws/notifications/${employee.id}/`);
+    const socket = new WebSocket(`${socketUrl}/ws/notifications/${employee.id}/`);
 
     socket.addEventListener('open', (event) => {
         console.log('WebSocket connection established');

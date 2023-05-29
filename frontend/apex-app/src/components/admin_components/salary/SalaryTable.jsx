@@ -71,7 +71,11 @@ function SalaryTable({searchValue}) {
                 <td>Employee</td>
               }
               <td>{employee.salary}</td>
-              <td></td>
+              <td>
+                <span className={`badge rounded-pill p-2 ${employee.salary_status === 'Paid' ? 'bg-success' : 'bg-danger'}`}>
+                  {employee.salary_status}
+                </span>
+              </td>
               <td><Button className='btn btn-primary' onClick={()=>handleViewClick(employee)}><FontAwesomeIcon icon={faEye} /> View</Button></td>
             </tr>
           ))}

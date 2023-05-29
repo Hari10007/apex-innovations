@@ -1,37 +1,52 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Button, Form } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import moment from 'moment';
 import useAxios from '../../../utilis/useAxios';
 import { setMessage } from '../../../redux-toolkit/messageSlice';
 import { useDispatch } from 'react-redux';
-import { useEffect } from 'react';
-import '../../css/Holiday.css'
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { useParams } from 'react-router-dom';
+import { toggleValue } from '../../../redux-toolkit/componentUpdateSlice';
 
-function HolidayModal(props) {
+function SalaryFormModal(props) {
     const api = useAxios();
     const dispatch = useDispatch();
+    const params = useParams();
 
-    const isWeekend = (date) => {
-        const day = date.getDay();
-        return day === 0 || day === 6;
-    };
+    const fetchEmployee = async (employeeId)=>{
+        try{
+            const response = await api.get(`employee/${employeeId}`);
 
-    const highlightWeekends = (date) => {
-        return isWeekend(date) ? 'highlight-weekend' : null;
-    };
+            if (response.status === 200){
+                const valuesToUpdate = {
+                  name: response.data.first_name + response.data.last_name,
+                  salary: response.data.salary,
+                }
+
+                formik.setValues(valuesToUpdate);
+
+            }
+        }
+        catch (error){
+
+        }
+    }
+
+
 
     const initialValues = {
         name: '',
+        salary: '',
         date: '',
     }
     const validationSchema =  Yup.object().shape({
-            name: Yup.string().required('Name is required'),
-            date: Yup.date().required('Date is required').min(new Date(), 'Date cannot be in the past'),
+            name: Yup.string(),
+            salary: Yup.string().required('Salary is required'),
+            date: Yup.date().required('Date is required'),
         });
 
         const formik = useFormik({
@@ -40,18 +55,17 @@ function HolidayModal(props) {
             onSubmit: async (values) => {
 
             try {
-                const response = await api.post('holiday/create', {
-                    name: values.name,
+                const response = await api.post('salary/create', {
+                    employee: params?.id,
+                    salary: values.salary,
                     date: moment(values.date).format('YYYY-MM-DD'),
                 });
 
                 if (response.data) {
                     dispatch(setMessage({ message: response.data.message, type: response.data.status }));
-                    if (response.data.status === "success"){
-                        props.onHide();
-                        props.handle_holiday();
-                        formik.resetForm();
-                    }
+                    props.onHide();
+                    dispatch(toggleValue())
+                    formik.resetForm();
                 }
             } catch (error) {
                 dispatch(setMessage({ message: error.response.data.error, type: 'danger' }));
@@ -62,23 +76,21 @@ function HolidayModal(props) {
 
 
     useEffect(() => {
-        if (!formik.isSubmitting) {
-            formik.resetForm();
-        }
+        fetchEmployee(params?.id);
+        formik.resetForm();
     }, [props.show]);
 
-
-  return (
-    <>
-        <Modal
-            {...props}
-            size="md"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-        >
+    return (
+        <>
+            <Modal
+                {...props}
+                size="md"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
-                    Create Holiday
+                    Pay Salary
                 </Modal.Title>
             </Modal.Header>
 
@@ -91,28 +103,31 @@ function HolidayModal(props) {
                             value={formik.values.name}
                             onChange={formik.handleChange}
                             name = "name"
+                            readOnly
+                        />
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" controlId="formName">
+                        <Form.Label>Salary</Form.Label>
+                        <Form.Control type="text" 
+                            placeholder="salary" 
+                            value={formik.values.salary}
+                            onChange={formik.handleChange}
+                            name = "salary"
                         />
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formDate">
-                        <Form.Label>Date:</Form.Label>
+                        <Form.Label>Date</Form.Label>
                         <DatePicker
-                            className={`form-control ${formik.touched.date && formik.errors.date ? 'is-invalid' : ''}`}
+                            className="form-control"
                             onBlur={formik.handleBlur}
                             selected={formik.values.date}
                             onChange={(date) => formik.setFieldValue('date', date)}
-                            dateFormat="yyyy-MM-dd"
-                            placeholderText="yyyy-MM-dd"
-                            highlightDates={[
-                                {
-                                  'background-color': '#ff0000', // Red color
-                                  'border-radius': '50%',
-                                  color: '#fff',
-                                  start: new Date().getTime(),
-                                  end: new Date().getTime(),
-                                  daysOfWeek: [0, 6] // 0 for Sunday, 6 for Saturday
-                                }
-                              ]}
+                            dateFormat="MM/yyyy"
+                            showMonthYearPicker
+                            placeholderText="MM/yyyy"
+                            isInvalid={formik.touched.date && formik.errors.date}
                         />
                         {formik.touched.date  && formik.errors.date &&
                             <Form.Control.Feedback type='invalid'  style={{ display: 'block' }}>
@@ -123,15 +138,15 @@ function HolidayModal(props) {
 
 
                     <Button variant="primary" type="submit" className="text-center">
-                        Add Holiday
+                        Pay
                     </Button>
                 </Form>
             </Modal.Body>
 
         </Modal>
-        
-    </>
-  )
+            
+        </>
+    )
 }
 
-export default HolidayModal
+export default SalaryFormModal

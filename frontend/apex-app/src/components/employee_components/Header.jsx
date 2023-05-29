@@ -7,12 +7,13 @@ import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../redux-toolkit/userSlice';
+import { baseURL } from '../../utilis/baseUrl';
 
 function Header() {
   const location = useLocation();
   const [header, setHeader] = useState("");
   const employee = useSelector(selectUser);
-  const imageURL = employee.image && "http://localhost:8000/api" + employee.image;
+  const imageURL = employee.image && `${baseURL}` + employee.image;
 
     
   useEffect(() => {

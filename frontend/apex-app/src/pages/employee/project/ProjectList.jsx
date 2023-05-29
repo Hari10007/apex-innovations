@@ -17,14 +17,14 @@ function ProjectList() {
 
   return (
     <>  
-      {employee?.manager  &&
+      {employee?.manager && !employee?.hr_manager  &&
         <>   
           <ProjectButton />
           <SearchBar handleSearch={handleSearch} searchValue={searchValue}/>
           <ProjectCard searchValue={searchValue}/>
         </>
       }
-      {employee?.admin ? 
+      {employee?.hr_manager ? 
         <>   
           <SearchBar handleSearch={handleSearch} searchValue={searchValue}/>
           <AllProjectCard searchValue={searchValue} />

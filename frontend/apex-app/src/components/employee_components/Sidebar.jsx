@@ -69,14 +69,14 @@ function Sidebar() {
             <SideNav.Toggle />
 
             <SideNav.Nav key={defaultSelected} defaultSelected={defaultSelected}>
-                {employee?.manager && 
+                {/* {employee?.manager && 
                     <NavItem eventKey="dashboard">
                         <NavIcon>
                             <FontAwesomeIcon icon={faGauge} style={{  fontSize: '1.0rem' }} />
                         </NavIcon>
                         <NavText>Dashboard</NavText>            
                     </NavItem>
-                }
+                } */}
                 {employee?.admin && 
                         <NavItem eventKey="admin_dashboard">
                             <NavIcon>
@@ -112,7 +112,7 @@ function Sidebar() {
                 )
                 }
 
-                {employee?.manager && 
+                {employee?.manager && !employee?.hr_manager&& 
                     <NavItem eventKey="leave_management">
                         <NavIcon>
                             <FontAwesomeIcon icon={faListCheck}  style={{  fontSize: '1.0rem' }} />

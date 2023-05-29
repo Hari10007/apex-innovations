@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Form } from 'react-bootstrap'
+import { Form, InputGroup } from 'react-bootstrap'
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch } from 'react-redux';
@@ -10,14 +10,19 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { baseURL } from '../../../utilis/baseUrl';
+import moment from 'moment';
 
 
 function EmployeeCreateForm() {
     const dispatch = useDispatch();
     const api = useAxios();
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
+    const [confirmPassword, setConfirmPassword] = useState(false);
 
     const [managers, setManagers] = useState([]);
+    const [designations, setDesignations] = useState([]);
 
     const initialValues = {
         FirstName: '',
@@ -25,6 +30,8 @@ function EmployeeCreateForm() {
         Email: '',
         PhoneNo: '',
         Image: null,
+        Password: '',
+        ConfirmPassword: '',
         Manager: '',
         Designation: '',
         Qualification: '',
@@ -37,6 +44,7 @@ function EmployeeCreateForm() {
         IsActive: false,
         IsSuperUser: false,
         IsStaff: false,
+        IsHRManager: false,
 
     }
 
@@ -44,11 +52,18 @@ function EmployeeCreateForm() {
       FirstName: Yup.string().required('First Name is required'),
       LastName: Yup.string().required('Last Name is required'),
       Email: Yup.string().email('Invalid email address').required('Email is required'),
+      Password: Yup.lazy((value) =>
+        value ? Yup.string().required('Password is required') : Yup.string()
+      ),
+      ConfirmPassword: Yup.lazy((value) =>
+        value ? Yup.string().required('Confirm Password is required')
+          .oneOf([Yup.ref('Password'), null], 'Passwords must match') : Yup.string()
+      ),
       PhoneNo: Yup.string().matches(/^[0-9]{10}$/, 'Invalid phone number').required('Phone Number is required'),
       Image: Yup.mixed().nullable(),
-      Manager: Yup.array(),
-      Designation: Yup.string().required('Designation is required'),
-      Qualification: Yup.string().required('Qualification is required'),
+      Manager: Yup.string(),
+      Designation: Yup.string(),
+      Qualification: Yup.string(),
       DateJoined: Yup.string().required('DateJoined is required'),
       City: Yup.string().required('City is required'),
       State: Yup.string().required('State is required'),
@@ -58,6 +73,7 @@ function EmployeeCreateForm() {
       IsActive: Yup.boolean(),
       IsSuperUser: Yup.boolean(),
       IsStaff: Yup.boolean(),
+      IsHRManager: Yup.boolean(),
     });
     
 
@@ -74,9 +90,23 @@ function EmployeeCreateForm() {
         }
     }
 
+    const fetchDesignation = async ()=>{
+      try{
+          const response = await api.get('designation/list');
+
+          if (response.status === 200){
+              setDesignations(response.data)
+          }
+      }
+      catch(error){
+
+      }
+  }
+
 
     useEffect(() =>{
         fetchManagers();
+        fetchDesignation()
     }, [])
 
 
@@ -87,22 +117,26 @@ function EmployeeCreateForm() {
         onSubmit: async (values) => {
             try {
                 const formData = new FormData();
+                formData.append('image', values.Image);
                 formData.append('first_name', values.FirstName);
                 formData.append('last_name', values.LastName);
                 formData.append('email', values.Email);
-                formData.append('phone_number', values.PhoneNo);
-                formData.append('designation', values.Designation);
+                formData.append('phone', values.PhoneNo);
+                formData.append('password', values.Password);
+                formData.append('password2', values.ConfirmPassword);
+                formData.append('designation_id', values.Designation);
                 formData.append('qualification', values.Qualification);
-                formData.append('date_joined', values.DateJoined);
+                formData.append('manager_id', values.Manager);
+                formData.append('date_joined', moment(values.DateJoined).format('YYYY-MM-DD'));
                 formData.append('city', values.City);
                 formData.append('state', values.State);
                 formData.append('salary', values.Salary);
-                formData.append('status', values.Status);
                 formData.append('is_admin', values.IsAdmin);
                 formData.append('is_manager', values.IsManager);
                 formData.append('is_active', values.IsActive);
                 formData.append('is_superuser', values.IsSuperUser);
                 formData.append('is_staff', values.IsStaff);
+                formData.append('is_hr_manager', values.IsHRManager);
  
 
                 const response = await api.post('create', formData, {
@@ -110,16 +144,19 @@ function EmployeeCreateForm() {
                     'Content-Type': 'multipart/form-data',
                     }});
 
-                if (response.data) {
+                if (response.status === 201) {
                     dispatch(setMessage({ message: response.data.message, type: response.data.status }));
                     navigate('/employees/page/1');
                 }
             } 
             catch (error) {
+                console.log(error.response.data.error)
                 dispatch(setMessage({ message: error.response.data.error, type: 'danger' }));
             }
         },
     });
+
+    console.log(formik.values)
 
   return (
     <>
@@ -135,7 +172,7 @@ function EmployeeCreateForm() {
                     <div className='d-flex flex-column align-items-center'>
                         {formik.values.Image && (
                             <img  id="previewImage" 
-                              src={`http://localhost:8000/api${formik.values.Image}`} 
+                              src={`${baseURL + formik.values.Image}`} 
                               className="img-thumbnail img-fluid" 
                               alt="Avatar" 
                               style={{
@@ -233,6 +270,58 @@ function EmployeeCreateForm() {
                           </Form.Control.Feedback>
                       </div>
                     </div>
+
+                    <div className='row d-flex align-items-center justify-content-center my-2'>
+                      <div className="d-flex">
+                          <Form.Label><h6>Password *</h6></Form.Label>
+                      </div>
+
+                      <div className="d-flex flex-column">
+                          <InputGroup>
+                            <Form.Control 
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="password"
+                                name='Password'
+                                value={formik.values.Password}
+                                isInvalid={formik.touched.Password && formik.errors.Password}
+                                onChange={formik.handleChange}
+                              />
+                            <InputGroup.Text onClick={()=>setShowPassword(!showPassword)}>
+                              <i className={showPassword ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'} />
+                            </InputGroup.Text>
+                          </InputGroup>
+
+                          <Form.Control.Feedback type="password">
+                            <h6 style={{ color: 'red' }}>{formik.errors.Password}</h6>
+                          </Form.Control.Feedback>
+                      </div>
+                    </div>
+
+                    <div className='row d-flex align-items-center justify-content-center my-2'>
+                      <div className="d-flex">
+                          <Form.Label><h6>Confirm Password *</h6></Form.Label>
+                      </div>
+
+                      <div className="d-flex flex-column">
+                          <InputGroup>
+                            <Form.Control 
+                                type={confirmPassword ? 'text' : 'password'}
+                                placeholder="confirm password"
+                                name='ConfirmPassword'
+                                value={formik.values.ConfirmPassword}
+                                isInvalid={formik.touched.ConfirmPassword && formik.errors.ConfirmPassword}
+                                onChange={formik.handleChange}
+                                />
+                            <InputGroup.Text onClick={()=>setConfirmPassword(!confirmPassword)}>
+                              <i className={confirmPassword ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'} />
+                            </InputGroup.Text>
+                          </InputGroup>
+
+                          <Form.Control.Feedback type="password">
+                            <h6 style={{ color: 'red' }}>{formik.errors.ConfirmPassword}</h6>
+                          </Form.Control.Feedback>
+                      </div>
+                    </div>
       
                     <div className='row d-flex align-items-center justify-content-center my-2'>
                       <div className="d-flex">
@@ -256,23 +345,29 @@ function EmployeeCreateForm() {
 
                     <div className='row d-flex align-items-center justify-content-center my-2'>
                       <div className="d-flex">
-                          <Form.Label><h6>Designation *</h6></Form.Label>
+                          <Form.Label><h6>Designation </h6></Form.Label>
                       </div>
 
                       <div className="d-flex flex-column">
-                          <Form.Control 
-                              type="text"
-                              placeholder="designation"
-                              name='Designation'
-                              value={formik.values.Designation}
-                              isInvalid={formik.touched.Designation && formik.errors.Designation}
-                              onChange={formik.handleChange}
-                              />
-                          <Form.Control.Feedback type="invalid">
-                                  <h6>{formik.errors.Designation}</h6>
-                          </Form.Control.Feedback>
+                        <Form.Select 
+                          name='Designation'
+                          value={formik.values.Designation}
+                          isInvalid={formik.touched.Designation && formik.errors.Designation}
+                          onChange={formik.handleChange}
+                        >
+                          <option value="">Choose designation</option>
+                          {designations?.map(designation => (
+                            <option key={designation.id} value={designation.id}>
+                              {designation.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                        <Form.Control.Feedback type="invalid">
+                          <h6>{formik.errors.Designation}</h6>
+                        </Form.Control.Feedback>
                       </div>
                     </div>
+
 
                     <div className='row d-flex align-items-center justify-content-center my-2'>
                       <div className="d-flex">
@@ -323,9 +418,6 @@ function EmployeeCreateForm() {
                       </div>
                     </div>
 
-
-                    
-
                     <div className="row d-flex align-items-center justify-content-center my-2">
                       <div className="col-12 col-md-3 d-flex">
                         <Form.Label><h6>Employee Type</h6></Form.Label>
@@ -369,6 +461,14 @@ function EmployeeCreateForm() {
                           label="Active"
                           name="IsActive"
                           checked={formik.values.IsActive}
+                          onChange={formik.handleChange}
+                        />
+                        <Form.Check
+                          inline
+                          type="checkbox"
+                          label="HRManager"
+                          name="IsHRManager"
+                          checked={formik.values.IsHRManager}
                           onChange={formik.handleChange}
                         />
                       </div>

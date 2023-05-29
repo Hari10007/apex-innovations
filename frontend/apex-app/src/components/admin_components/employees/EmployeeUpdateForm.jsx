@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Form } from 'react-bootstrap'
+import { Form, InputGroup } from 'react-bootstrap'
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch } from 'react-redux';
@@ -7,17 +7,26 @@ import useAxios from '../../../utilis/useAxios';
 import { setMessage } from '../../../redux-toolkit/messageSlice';
 import { Button } from '@mui/material';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { baseURL } from '../../../utilis/baseUrl';
+import moment from 'moment';
 
 
 function EmployeeUpdateForm() {
     const dispatch = useDispatch();
     const api = useAxios();
     const navigate = useNavigate();
+    const params= useParams();
+
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const [managers, setManagers] = useState([]);
+    const [designations, setDesignations] = useState([]);
+
     const [employee, setEmployee] = useState('');
 
     const initialValues = {
@@ -26,6 +35,9 @@ function EmployeeUpdateForm() {
         Email: '',
         PhoneNo: '',
         Image: null,
+        OldPassword: '',
+        NewPassword: '',
+        ConfirmPassword: '',
         Manager: '',
         Designation: '',
         Qualification: '',
@@ -38,18 +50,21 @@ function EmployeeUpdateForm() {
         IsActive: false,
         IsSuperUser: false,
         IsStaff: false,
-
     }
 
     const validationSchema = Yup.object().shape({
       FirstName: Yup.string().required('First Name is required'),
       LastName: Yup.string().required('Last Name is required'),
       Email: Yup.string().email('Invalid email address').required('Email is required'),
+      OldPassword: Yup.string(),
+      NewPassword: Yup.string(),
+      ConfirmPassword: Yup.string()
+        .oneOf([Yup.ref('NewPassword'), null], 'Passwords must match'),
       PhoneNo: Yup.string().matches(/^[0-9]{10}$/, 'Invalid phone number').required('Phone Number is required'),
       Image: Yup.mixed().nullable(),
-      Manager: Yup.array(),
-      Designation: Yup.string().required('Designation is required'),
-      Qualification: Yup.string().required('Qualification is required'),
+      Manager: Yup.string(),
+      Designation: Yup.string(),
+      Qualification: Yup.string(),
       DateJoined: Yup.string().required('DateJoined is required'),
       City: Yup.string().required('City is required'),
       State: Yup.string().required('State is required'),
@@ -60,6 +75,50 @@ function EmployeeUpdateForm() {
       IsSuperUser: Yup.boolean(),
       IsStaff: Yup.boolean(),
     });
+
+    const formik = useFormik({
+        initialValues,
+        validationSchema,
+        onSubmit: async (values) => {
+            try {
+                const formData = new FormData();
+                formData.append('image', values.Image);
+                formData.append('first_name', values.FirstName);
+                formData.append('last_name', values.LastName);
+                formData.append('email', values.Email);
+                formData.append('phone', values.PhoneNo);
+                formData.append('password', values.NewPassword);
+                formData.append('password1', values.OldPassword);
+                formData.append('password2', values.ConfirmPassword);
+                formData.append('designation_id', values.Designation);
+                formData.append('qualification', values.Qualification);
+                formData.append('manager_id', values.Manager);
+                formData.append('date_joined', moment(values.DateJoined).format('YYYY-MM-DD'));
+                formData.append('city', values.City);
+                formData.append('state', values.State);
+                formData.append('salary', values.Salary);
+                formData.append('is_admin', values.IsAdmin);
+                formData.append('is_manager', values.IsManager);
+                formData.append('is_active', values.IsActive);
+                formData.append('is_superuser', values.IsSuperUser);
+                formData.append('is_staff', values.IsStaff);
+
+
+                const response = await api.post(`update/${employee.id}`, formData, {
+                    headers: {
+                    'Content-Type': 'multipart/form-data',
+                    }});
+
+                if (response.data) {
+                    dispatch(setMessage({ message: response.data.message, type: response.data.status }));
+                }
+            } 
+            catch (error) {
+                dispatch(setMessage({ message: error.response.data.error, type: 'danger' }));
+            }
+        },
+    });
+
     
 
     const fetchManagers = async ()=>{
@@ -75,21 +134,51 @@ function EmployeeUpdateForm() {
         }
     }
 
-    const fetchEmployee = async (employeeId)=>{
+    const fetchDesignation = async ()=>{
         try{
-            const response = await api.get(`update/${employeeId}`);
+            const response = await api.get('designation/list');
 
             if (response.status === 200){
-                formik.setValues({
-                    FirstName: response.data.first_name,
-                    LastName: response.data.last_name,
-                    Image: response.data.image,
-                    Qualification: response.data.qualification,
-                    Employees: response.data.employee_emails,
-                    IsAdmin: response.data.is_admin,
-                    IsSuperUser: response.data.is_superuser,
-                    IsManager: response.data.is_manager,
-                });
+                setDesignations(response.data)
+            }
+        }
+        catch(error){
+
+        }
+    }
+
+    const fetchEmployee = async (employeeId)=>{
+        try{
+            const response = await api.get(`employee/${employeeId}`);
+
+            if (response.status === 200){
+                const valuesToUpdate = {
+                  FirstName: response.data.first_name,
+                  LastName: response.data.last_name,
+                  Email: response.data.email,
+                  PhoneNo: response.data.phone,
+                  Designation: response.data.designation,
+                  Manager: response.data.parent,
+                  Image: response.data.image,
+                  Qualification: response.data.qualification,
+                  DateJoined:  moment(response.data.date_joined).toDate(),
+                  City: response.data.city,
+                  State: response.data.state,
+                  Salary: response.data.salary,
+                  IsAdmin: response.data.is_admin,
+                  IsActive: response.data.is_active,
+                  IsStaff: response.data.is_staff,
+                  IsSuperUser: response.data.is_superuser,
+                  IsManager: response.data.is_manager,
+                }
+
+                for (const property in valuesToUpdate) {
+                  if (valuesToUpdate[property] === null) {
+                    valuesToUpdate[property] = "";
+                  }
+                }
+
+                formik.setValues(valuesToUpdate);
                 setEmployee(response.data)
             }
         }
@@ -98,57 +187,16 @@ function EmployeeUpdateForm() {
         }
     }
 
-
-
     useEffect(() =>{
-        fetchManagers();
+      fetchManagers();
+      fetchDesignation();
+      fetchEmployee(params?.employeeId);
     }, [])
 
 
-        
-    const formik = useFormik({
-        initialValues,
-        validationSchema,
-        onSubmit: async (values) => {
-            try {
-                const formData = new FormData();
-                formData.append('first_name', values.FirstName);
-                formData.append('last_name', values.LastName);
-                formData.append('email', values.Email);
-                formData.append('phone_number', values.PhoneNo);
-                formData.append('designation', values.Designation);
-                formData.append('qualification', values.Qualification);
-                formData.append('date_joined', values.DateJoined);
-                formData.append('city', values.City);
-                formData.append('state', values.State);
-                formData.append('salary', values.Salary);
-                formData.append('status', values.Status);
-                formData.append('is_admin', values.IsAdmin);
-                formData.append('is_manager', values.IsManager);
-                formData.append('is_active', values.IsActive);
-                formData.append('is_superuser', values.IsSuperUser);
-                formData.append('is_staff', values.IsStaff);
- 
-
-                const response = await api.post('create', formData, {
-                    headers: {
-                    'Content-Type': 'multipart/form-data',
-                    }});
-
-                if (response.data) {
-                    dispatch(setMessage({ message: response.data.message, type: response.data.status }));
-                    navigate('/employees/page/1');
-                }
-            } 
-            catch (error) {
-                dispatch(setMessage({ message: error.response.data.error, type: 'danger' }));
-            }
-        },
-    });
-
   return (
     <>
-        <h2>Register New Employee</h2>
+        <h2>Edit Employee Details</h2>
         <Form onSubmit={formik.handleSubmit}>
             <div className="container overflow-hidden my-4">
                 <div className="row gy-3">
@@ -160,7 +208,7 @@ function EmployeeUpdateForm() {
                     <div className='d-flex flex-column align-items-center'>
                         {formik.values.Image && (
                             <img  id="previewImage" 
-                              src={`http://localhost:8000/api${formik.values.Image}`} 
+                              src={`${baseURL + formik.values.Image}`} 
                               className="img-thumbnail img-fluid" 
                               alt="Avatar" 
                               style={{
@@ -258,6 +306,84 @@ function EmployeeUpdateForm() {
                           </Form.Control.Feedback>
                       </div>
                     </div>
+
+                    <div className='row d-flex align-items-center justify-content-center my-2'>
+                      <div className="d-flex">
+                          <Form.Label><h6>Old Password </h6></Form.Label>
+                      </div>
+
+                      <div className="d-flex flex-column">
+                          <InputGroup>
+                            <Form.Control 
+                                type={showOldPassword ? 'text' : 'password'}
+                                placeholder="password"
+                                name='OldPassword'
+                                value={formik.values.OldPassword}
+                                isInvalid={formik.touched.OldPassword && formik.errors.OldPassword}
+                                onChange={formik.handleChange}
+                              />
+                            <InputGroup.Text onClick={()=>setShowOldPassword(!showOldPassword)}>
+                              <i className={showOldPassword ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'} />
+                            </InputGroup.Text>
+                          </InputGroup>
+
+                          <Form.Control.Feedback type="password">
+                            <h6 style={{ color: 'red' }}>{formik.errors.OldPassword}</h6>
+                          </Form.Control.Feedback>
+                      </div>
+                    </div>
+
+                    <div className='row d-flex align-items-center justify-content-center my-2'>
+                      <div className="d-flex">
+                          <Form.Label><h6>New Password </h6></Form.Label>
+                      </div>
+
+                      <div className="d-flex flex-column">
+                          <InputGroup>
+                            <Form.Control 
+                                type={showNewPassword ? 'text' : 'password'}
+                                placeholder="password"
+                                name='NewPassword'
+                                value={formik.values.NewPassword}
+                                isInvalid={formik.touched.NewPassword && formik.errors.NewPassword}
+                                onChange={formik.handleChange}
+                              />
+                            <InputGroup.Text onClick={()=>setShowNewPassword(!showNewPassword)}>
+                              <i className={showNewPassword ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'} />
+                            </InputGroup.Text>
+                          </InputGroup>
+
+                          <Form.Control.Feedback type="password">
+                            <h6 style={{ color: 'red' }}>{formik.errors.NewPassword}</h6>
+                          </Form.Control.Feedback>
+                      </div>
+                    </div>
+
+                    <div className='row d-flex align-items-center justify-content-center my-2'>
+                      <div className="d-flex">
+                          <Form.Label><h6>Confirm Password </h6></Form.Label>
+                      </div>
+
+                      <div className="d-flex flex-column">
+                          <InputGroup>
+                            <Form.Control 
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                placeholder="confirm password"
+                                name='ConfirmPassword'
+                                value={formik.values.ConfirmPassword}
+                                isInvalid={formik.touched.ConfirmPassword && formik.errors.ConfirmPassword}
+                                onChange={formik.handleChange}
+                                />
+                            <InputGroup.Text onClick={()=>setShowConfirmPassword(!showConfirmPassword)}>
+                              <i className={showConfirmPassword ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'} />
+                            </InputGroup.Text>
+                          </InputGroup>
+
+                          <Form.Control.Feedback type="password">
+                            <h6 style={{ color: 'red' }}>{formik.errors.ConfirmPassword}</h6>
+                          </Form.Control.Feedback>
+                      </div>
+                    </div>
       
                     <div className='row d-flex align-items-center justify-content-center my-2'>
                       <div className="d-flex">
@@ -281,23 +407,29 @@ function EmployeeUpdateForm() {
 
                     <div className='row d-flex align-items-center justify-content-center my-2'>
                       <div className="d-flex">
-                          <Form.Label><h6>Designation *</h6></Form.Label>
+                          <Form.Label><h6>Designation </h6></Form.Label>
                       </div>
 
                       <div className="d-flex flex-column">
-                          <Form.Control 
-                              type="text"
-                              placeholder="designation"
-                              name='Designation'
-                              value={formik.values.Designation}
-                              isInvalid={formik.touched.Designation && formik.errors.Designation}
-                              onChange={formik.handleChange}
-                              />
-                          <Form.Control.Feedback type="invalid">
-                                  <h6>{formik.errors.Designation}</h6>
-                          </Form.Control.Feedback>
+                        <Form.Select 
+                          name='Designation'
+                          value={formik.values.Designation}
+                          isInvalid={formik.touched.Designation && formik.errors.Designation}
+                          onChange={formik.handleChange}
+                        >
+                          <option value="">Choose designation</option>
+                          {designations?.map(designation => (
+                            <option key={designation.id} value={designation.id}>
+                              {designation.name}
+                            </option>
+                          ))}
+                        </Form.Select>
+                        <Form.Control.Feedback type="invalid">
+                          <h6>{formik.errors.Designation}</h6>
+                        </Form.Control.Feedback>
                       </div>
                     </div>
+
 
                     <div className='row d-flex align-items-center justify-content-center my-2'>
                       <div className="d-flex">
@@ -347,9 +479,6 @@ function EmployeeUpdateForm() {
                         </Form.Control.Feedback>
                       </div>
                     </div>
-
-
-                    
 
                     <div className="row d-flex align-items-center justify-content-center my-2">
                       <div className="col-12 col-md-3 d-flex">
@@ -482,7 +611,7 @@ function EmployeeUpdateForm() {
  
                     
                     <div className='col-12 my-5'>
-                        <Button variant="contained" color="primary" type="submit">Create Employee</Button>
+                        <Button variant="contained" color="primary" type="submit">Update Employee</Button>
                     </div>
                 </div>
             </div>
