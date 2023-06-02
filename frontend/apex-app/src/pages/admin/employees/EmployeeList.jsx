@@ -3,7 +3,6 @@ import { useState } from 'react';
 import EmployeeTable from '../../../components/admin_components/employees/EmployeeTable';
 import { Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import AlertMessage from '../../../components/alert/Alert';
 import EmployeDesignationForm from '../../../components/admin_components/employees/EmployeeDesignationForm';
 
 function EmployeeListPage() {
@@ -35,7 +34,7 @@ function EmployeeListPage() {
                     </Button>
                     <EmployeDesignationForm handleDesignation={handleDesignation} show={modalShow} onHide={() => setModalShow(false)} />
                     <Button variant="primary" onClick={() => navigate("/employees/create")}>
-                    <i className="fa-solid fa-plus"></i> Add Employee
+                      <i className="fa-solid fa-plus"></i> Add Employee
                     </Button>
                 </div>
             </div>

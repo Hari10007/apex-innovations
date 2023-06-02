@@ -8,3 +8,17 @@
     font-weight: 400;
     font-size:48px;
  }
+
+ @media (max-width: 767px) {
+    h4.title {
+      font-size: 36px;
+    }
+  }
+
+  
+  @media (max-width: 767px) {
+    .login_content {
+      height: auto;
+      padding: 20px;
+    }
+  }

@@ -1,10 +1,19 @@
 
 .form-sign-in {
-    max-width: 560px;
-    padding: 5%;
+    max-width: 600px;
+    padding: 3%;
     box-shadow: 9px 20px 20px #000000;
     background-color: #055160;
+    border-radius: 15px;
   }
+
+  @media (max-width: 767px) {
+    .form-sign-in {
+      padding: 7% 5%;
+    }
+  
+  }
+
   .form-sign-in h1{
     color: #F5ECEC;
     padding-bottom: 5%;

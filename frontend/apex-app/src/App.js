@@ -4,7 +4,7 @@ import EmployeeRoutes from './routes/EmployeeRoutes';
 import { baseURL } from './utilis/baseUrl';
 import ErrorPage from './pages/employee/503Page';
 import { css } from '@emotion/react';
-import { ClipLoader } from 'react-spinners';
+import { PuffLoader } from 'react-spinners';
 
 const override = css`
   display: block;
@@ -45,7 +45,7 @@ function App() {
     <div className="App">
       {loading ? (
         <div className="overlay">
-          <ClipLoader css={override} size={150} color={'#E50914'} loading={loading} />
+          <PuffLoader css={override} size={150} color={'#E50914'} loading={loading} />
         </div>
       ) : error ? (
         <ErrorPage />

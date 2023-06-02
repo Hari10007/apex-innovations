@@ -23,11 +23,11 @@ function HolidayUpdateModal(props) {
     }
 
     const validationSchema =  Yup.object().shape({
-            name: Yup.string().required('Name is required'),
-            date: Yup.date().required('Date is required').min(new Date(), 'Date cannot be in the past'),
-        });
+        name: Yup.string().required('Name is required'),
+        date: Yup.date().required('Date is required').min(new Date(), 'Date cannot be in the past'),
+    });
 
-        const formik = useFormik({
+    const formik = useFormik({
             initialValues,
             validationSchema,
             onSubmit: async (values) => {

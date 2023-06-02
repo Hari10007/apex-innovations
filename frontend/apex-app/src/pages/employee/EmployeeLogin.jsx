@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import '../assets/css/Login.css'
 import EmployeeLogin from '../../components/employee_components/EmployeeLogin'
 import { css } from '@emotion/react';
-import { ClipLoader } from 'react-spinners';
+import { PuffLoader } from 'react-spinners';
 
 const override = css`
   display: block;
@@ -33,11 +33,13 @@ function EmployeeLoginPage() {
           className="login_image"
         >
           <h4 className="title">Welcome to Apex Innovations</h4>
-          <EmployeeLogin />
+          <div className="login_content">
+            <EmployeeLogin />
+          </div>
         </div>
       ) : (
         <div className="overlay">
-          <ClipLoader css={override} size={150} color={'#E50914'} loading={!imageLoaded} />
+          <PuffLoader css={override} size={150} color={'#E50914'} loading={!imageLoaded} />
         </div>
       )}
     </>
